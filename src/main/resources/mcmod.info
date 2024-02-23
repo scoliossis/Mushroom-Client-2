@@ -1,0 +1,16 @@
+[
+{
+  "modid": "mushroom",
+  "name": "mushroom client",
+  "description": "#1 hypixel client",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["scale"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

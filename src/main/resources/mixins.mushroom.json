@@ -1,0 +1,35 @@
+{
+  "required": true,
+  "minVersion": "0.7",
+  "package": "mushroom.mixins",
+  "refmap": "mixins.mushroom.refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "C03Accessor",
+    "MixinModList",
+    "MoveEntity",
+    "PacketEvent",
+    "AbstractClientPlayerMixin",
+    "ToolClass"
+  ],
+  "client": [
+    "AnimationsMixin",
+    "EntityRendererMixin",
+    "MinecraftAccessor",
+    "MinecraftMixin",
+    "MixinGuiMainMenu",
+    "NickHider",
+    "PlayerControllerAccessor",
+    "PlayerSPAccessor",
+    "PlayerSPMixin",
+    "MixinRenderLivingEntity",
+    "MixinRenderPlayer",
+    "EntityLivingBaseMixin",
+    "PlayerControllerMixin",
+    "GuiChatMixin",
+    "GuiScreenMixin",
+    "GuiMixin",
+    "PlayerMixin",
+    "EntityMixin"
+  ]
+}
