@@ -30,6 +30,7 @@
     "GuiScreenMixin",
     "GuiMixin",
     "PlayerMixin",
-    "EntityMixin"
+    "EntityMixin",
+    "ChunkMixin"
   ]
 }
