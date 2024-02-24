@@ -196,11 +196,6 @@ public class Configs {
     @Property(type = Property.Type.SELECT, name = "GUI Color", description = "color of the gui", parent = "Click GUI", options = {"tenacity", "hacker", "mushroom", "bubblegum", "custom"})
     public static int cguicolor = 3;
 
-    @Property(type = Property.Type.NUMBER, name = "Buttons Width", description = "width of buttons", parent = "Click GUI", min = 25, max = 200)
-    public static float buttonsWidth = 150;
-    @Property(type = Property.Type.NUMBER, name = "Buttons Height", description = "gui color going up and down!", parent = "Click GUI", min = 5, max = 30)
-    public static float buttonsHeight = 15;
-
     @Property(type = Property.Type.COLOR, name = "Background Color", description = "color of normal buttons", parent = "GUI Color", modereq = 4)
     public static int[] clickguiCustomColorBack = new int[] {21, 21, 21, 255, 255, 0, 0, 0};
     @Property(type = Property.Type.COLOR, name = "Background Color 2", description = "faded color of normal buttons", parent = "GUI Color", modereq = 4)
@@ -219,7 +214,7 @@ public class Configs {
 
     @Property(type = Property.Type.BOOLEAN, name = "Anime Girls", description = "shows silly little anime girls in the bottom right", parent = "Click GUI")
     public static boolean animegirlsinGUi = true;
-    @Property(type = Property.Type.SELECT, name = "Anime Girl", description = "whats one you want!!", parent = "Click GUI", options = {"purple hair", "red hair", "bread", "pink hair", "catgirl"})
+    @Property(type = Property.Type.SELECT, name = "Anime Girl", description = "whats one you want!!", parent = "Click GUI", options = {"purple hair", "red hair", "red hair 2", "bread", "pink hair", "catgirl"})
     public static int animegirl = 1;
     @Property(type = Property.Type.BOOLEAN, name = "No Background", description = "removes the gray background from the gui", parent = "Click GUI")
     public static boolean noBackground = false;
@@ -368,10 +363,19 @@ public class Configs {
     @Property(type = Property.Type.NUMBER, name = "Model Height", description = "choose model height :)", parent = "Model Modifier", min = 0.01f, max = 5)
     public static float modelHeight = 1;
 
-    @Property(type = Property.Type.BOOLEAN, name = "Capes", description = "awesome sauce capes", parent = "Visual")
+    @Property(type = Property.Type.BOOLEAN, name = "Cape", description = "awesome sauce capes", parent = "Visual")
     public static boolean capes = true;
-    @Property(type = Property.Type.SELECT, name = "Cape", description = "what cape you want", parent = "Capes", options = {"2011 minecon", "2012 minecon", "2013 minecon", "2015 minecon", "2016 minecon", "silly cape", "women kissing", "wtf", "mushroom", "anime girl"})
+    @Property(type = Property.Type.SELECT, name = "Cape Type", description = "what cape you want", parent = "Cape", options = {"2011 minecon", "2012 minecon", "2013 minecon", "2015 minecon", "2016 minecon", "silly cape", "women kissing", "wtf", "mushroom", "anime girl"})
     public static int caperNum = 0;
+
+    @Property(type = Property.Type.BOOLEAN, name = "Bed Plates", description = "coolio bed esp", parent = "Visual")
+    public static boolean bedPlates = true;
+    @Property(type = Property.Type.BOOLEAN, name = "Bed ESP", description = "coolio bed esp", parent = "Bed Plates")
+    public static boolean bedESP = true;
+    @Property(type = Property.Type.BOOLEAN, name = "Bed Plates", description = "shows every block surrounding", parent = "Bed Plates")
+    public static boolean bedPlaters = true;
+    @Property(type = Property.Type.BOOLEAN, name = "Only 1 high", description = "only shows the block above", parent = "Bed Plates")
+    public static boolean bedPlates1Laye = true;
 
     // ------------------------------------------------------------
     // ------------------------------------------------------------

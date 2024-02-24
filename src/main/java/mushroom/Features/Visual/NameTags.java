@@ -25,8 +25,6 @@ public class NameTags {
         if (Configs.nametags && event.entity instanceof EntityPlayer && (event.entity != mc.thePlayer || Configs.showownnametag) && event.entity.getDistanceToEntity(mc.thePlayer) < 100.0f && (AntiBot.isValidEntity(event.entity)) && (!Configs.targethud || event.entity.getDistanceToEntity(mc.thePlayer) > 6 || event.entity == mc.thePlayer || !Configs.followTargetHud) && PlayerLib.inGame()) {
             event.setCanceled(true);
 
-
-
             GlStateManager.alphaFunc(516, 0.1f);
             String name = event.entity.getName();
             if (event.entity == mc.thePlayer && Configs.nickhider) name = Configs.fakename;

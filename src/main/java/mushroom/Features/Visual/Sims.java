@@ -36,10 +36,14 @@ public class Sims {
         GL11.glRotatef(((entity.ticksExisted + partialTicks) * Configs.spinspeed) - 90.0f, 0.0f, 1.0f, 0.0f);
         GL11.glRotatef(-(Minecraft.getMinecraft().thePlayer.prevRotationYawHead + (Minecraft.getMinecraft().thePlayer.rotationYawHead - Minecraft.getMinecraft().thePlayer.prevRotationYawHead) * partialTicks), 0.0f, 1.0f, 0.0f);
         final double radius = Configs.radiusCrstal;
-        GL11.glLineWidth(2.0f);
+        GL11.glLineWidth(1.0f);
         GL11.glBegin(2);
 
         int angles = (int) Configs.angles;
+
+        GlStateManager.disableDepth();
+        GlStateManager.disableCull();
+        //GlStateManager.disableTexture2D();
 
         for (int i = 0; i <= angles; ++i) {
             final Color color = getColor(i, (int)angles, false);
@@ -79,6 +83,9 @@ public class Sims {
             }
             GL11.glVertex3d(0.0, -Configs.heightCrystal, 0.0);
         }
+
+        GlStateManager.enableDepth();
+        GlStateManager.enableCull();
 
         GL11.glEnd();
         GL11.glShadeModel(7424);

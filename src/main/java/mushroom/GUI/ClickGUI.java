@@ -72,7 +72,7 @@ public class ClickGUI extends GuiScreen {
 
     int[] searchForRGB = new int[] {0,0,0};
 
-    String[] animeGirls = {"purpleHair", "redHair", "bread", "pinkHair", "catGirl"};
+    String[] animeGirls = {"purpleHair", "redHair", "redHair2", "bread", "pinkHair", "catGirl"};
     public void drawScreen(int mx, int my, float var3) {
         if (!Configs.noBackground || burp) this.drawDefaultBackground();
         super.drawScreen(mx, my, var3);
@@ -85,7 +85,7 @@ public class ClickGUI extends GuiScreen {
         ScaledResolution s = new ScaledResolution(Minecraft.getMinecraft());
         if (burp) drawRect(0, 0, s.getScaledWidth(), s.getScaledWidth(), new Color(0,0,0).getRGB());
 
-        if (Configs.animegirlsinGUi) ClickGUI.drawTexture(new ResourceLocation("mushroom/clickgui/"+animeGirls[Configs.animegirl]+".png"), s.getScaledWidth() - (s.getScaledWidth() / 3), s.getScaledHeight() / 3, s.getScaledWidth() / 5, s.getScaledHeight() - (s.getScaledHeight() / 3));
+        if (Configs.animegirlsinGUi) ClickGUI.drawTexture(new ResourceLocation("mushroom/clickgui/"+animeGirls[Configs.animegirl]+".png"), s.getScaledWidth() - (s.getScaledWidth() / 3), (int) (s.getScaledHeight() / 2.5f), s.getScaledWidth() / 5, (int) (s.getScaledHeight() - (s.getScaledHeight() / 2.5f)));
 
         int x = (int) (s.getScaledWidth()/(960f/oldx));
         int y = (int) (s.getScaledHeight()/(495.5f/oldy));
@@ -112,6 +112,8 @@ public class ClickGUI extends GuiScreen {
             if (Configs.nospacescgui) settingName = settingName.replaceAll(" ", "");
 
             if (setting.parent == null && i != 0) {
+                drawRect(thexinquestion, theyinquestion + h, thexinquestion + w, theyinquestion + h + 4, baseColors[1].getRGB());
+
                 drawRect(thexinquestion - 2, theyinquestion + h, thexinquestion, theyinquestion + h + 4, surroundColors[1].getRGB());
                 drawRect(thexinquestion + w, theyinquestion + h, thexinquestion + w + 2, theyinquestion + h + 4, surroundColors[1].getRGB());
 
@@ -528,6 +530,7 @@ public class ClickGUI extends GuiScreen {
             }
         }
 
+        drawRect(thexinquestion, theyinquestion + h, thexinquestion + w, theyinquestion + h + 4, baseColors[1].getRGB());
         drawRect(thexinquestion - 2, theyinquestion + h, thexinquestion, theyinquestion + h + 4, surroundColors[1].getRGB());
         drawRect(thexinquestion + w, theyinquestion + h, thexinquestion + w + 2, theyinquestion + h + 4, surroundColors[1].getRGB());
         drawRect(thexinquestion, theyinquestion + h + 2, thexinquestion + w, theyinquestion + h + 4, surroundColors[1].getRGB());
@@ -629,7 +632,7 @@ public class ClickGUI extends GuiScreen {
             }
         }
 
-
+        drawRect(newx, newy + h, newx + w, newy + h + 4, baseColors[1].getRGB());
         drawRect(newx - 2, newy + h, newx, newy + h + 4, surroundColors[1].getRGB());
         drawRect(newx + w, newy + h, newx + w + 2, newy + h + 4, surroundColors[1].getRGB());
         drawRect(newx, newy + h + 2, newx + w, newy + h + 4, surroundColors[1].getRGB());
@@ -691,6 +694,7 @@ public class ClickGUI extends GuiScreen {
         GlStateManager.color(255.0F, 255.0F, 255.0F);
         Gui.drawModalRectWithCustomSizedTexture(x, y, (float) u, (float) v, w1, h1, (float) w2, (float) h2);
     }
+
     public static void drawTexture(ResourceLocation resourceLocation, int x, int y, int w, int h) {
         drawTexture(resourceLocation, x, y, w, h, w, h, 0, 0);
     }

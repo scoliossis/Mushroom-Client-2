@@ -181,15 +181,21 @@ public class Config extends CommandBase {
             System.out.println(readfile);
             while (allsettings.hasNext()) {
                 Setting setting = (Setting) allsettings.next();
-                if (setting instanceof BooleanSetting && setting.parent != null && setting.parent.parent == null && readfile.contains(setting.name)) {
+                if (setting instanceof BooleanSetting && setting.parent != null && setting.parent.parent == null && readfile.contains(setting.name + ":b")) {
                     // so i can launch my game w intellij :)
                     if (readfile.contains("Â")) {
                         setting.keybindint = Integer.parseInt(readfile.split(setting.name + ":b]")[1].split(",hÂ£")[0]);
                         setting.keybindchar = readfile.split(setting.name + ":b]")[1].split(",hÂ£")[1].split("!89")[0];
-                    }
-                    else {
+                    } else if (readfile.contains(":b]") && readfile.contains(",h£") && readfile.split(setting.name + ":b]").length > 0) {
                         setting.keybindint = Integer.parseInt(readfile.split(setting.name + ":b]")[1].split(",h£")[0]);
                         setting.keybindchar = readfile.split(setting.name + ":b]")[1].split(",h£")[1].split("!89")[0];
+                    }
+
+                    // just in case
+                    else {
+                        System.out.println("you on some 90s machine o smth idfk");
+                        System.out.println("i need to fix my keybinds loader");
+                        return;
                     }
                 }
             }

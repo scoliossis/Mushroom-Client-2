@@ -1,5 +1,8 @@
 package mushroom.mixins;
 
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.spongepowered.asm.mixin.Shadow;
 import net.minecraft.client.gui.Gui;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,4 +18,6 @@ public abstract class GuiMixin {
 
     @Shadow
     public abstract void drawTexturedModalRect(final int p0, final int p1, final int p2, final int p3, final int p4, final int p5);
+
+
 }
