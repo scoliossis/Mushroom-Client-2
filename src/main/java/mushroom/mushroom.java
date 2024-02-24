@@ -65,24 +65,21 @@ public class mushroom extends CommandBase {
     // bowaimbot - ehhhh maybe later
     // autoclicker - later ig
 
-    // add delaybeforesteal on chest stealer
-
 
     // other
     // add freecam
+    // add delaybeforesteal on chest stealer
     // custom scoreboard
     // discord rpc (idrk how to do this)
     // trail
     // trajectory's
     // cool font chat
     // auto pot / soup
-    // auto play
-    // play statistic or smth
+    // autoplay
+    // play statistics or smth
     // fix fonts to be easier to use
     // add client font options
     // store target hud pos, and other stuff
-    // bed plates
-    // scan blocks thingy, shouldnt be too hard maybe fps taxing.
 
 
     public static final String MODID = "mushroom";
@@ -186,6 +183,7 @@ public class mushroom extends CommandBase {
         MinecraftForge.EVENT_BUS.register(new AntiBot());
         MinecraftForge.EVENT_BUS.register(new Fucker());
         MinecraftForge.EVENT_BUS.register(new AutoTool());
+        MinecraftForge.EVENT_BUS.register(new BedESP());
 
         if (Files.exists(Paths.get(sillyfolderpath + "/accounts/sessionids.cfg"))) {
             validsessions = ReadFile(sillyfolderpath + "/accounts/sessionids.cfg");
