@@ -80,7 +80,7 @@ public class EntityLivingBaseMixin extends EntityMixin {
 
         if (this.isSprinting()) {
             float f = this.rotationYaw * 0.017453292F;
-            if (moveForward > 0 || !Configs.sprint) {
+            if ((moveForward > 0 || !Configs.sprint) && !Configs.speed) {
                 this.motionX -= (MathHelper.sin(f) * 0.2F);
                 this.motionZ += (MathHelper.cos(f) * 0.2F);
             }

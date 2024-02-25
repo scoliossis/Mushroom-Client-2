@@ -66,7 +66,7 @@ public class PlayerSPMixin {
         }
 
         if (Configs.speed && mc.thePlayer.getFoodStats().getFoodLevel() > 6.0f && !mc.thePlayer.isSprinting()) {
-            //mc.thePlayer.setSprinting(true);
+            mc.thePlayer.setSprinting(true);
         }
 
         if ((Configs.noslow && Minecraft.getMinecraft().thePlayer.isUsingItem()) || (Configs.killaura && Killaura.target != null && Killaura.isBlocking && Configs.autoblockSlowDown && mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword)) {

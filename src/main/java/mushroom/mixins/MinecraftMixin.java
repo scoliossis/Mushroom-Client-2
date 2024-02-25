@@ -88,7 +88,7 @@ public abstract class MinecraftMixin {
         if (Configs.fastbreak && click && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
             for (int i = 0; i < (int) Configs.maxBlocks; ++i) {
                 final BlockPos prevBlockPos = this.objectMouseOver.getBlockPos();
-                this.objectMouseOver = this.renderViewEntity.rayTrace((double)this.playerController.getBlockReachDistance(), 1.0f);
+                this.objectMouseOver = this.renderViewEntity.rayTrace(this.playerController.getBlockReachDistance(), 1.0f);
                 final BlockPos blockpos = this.objectMouseOver.getBlockPos();
                 if (this.objectMouseOver == null || blockpos == null || this.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || blockpos == prevBlockPos || this.theWorld.getBlockState(blockpos).getBlock().getMaterial() == Material.air) {
                     break;

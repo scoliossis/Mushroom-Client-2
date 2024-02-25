@@ -15,9 +15,7 @@ public class PlayerControllerMixin {
     @Redirect(method = { "onPlayerDamageBlock" }, at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getPlayerRelativeBlockHardness(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/BlockPos;)F"))
     public float onPlayerDamageBlock(final Block instance, final EntityPlayer playerIn, final World worldIn, final BlockPos pos) {
         float hardness = instance.getPlayerRelativeBlockHardness(playerIn, worldIn, pos);
-        if (Configs.fastbreak) {
-            hardness *= Configs.breakSpeed;
-        }
+        hardness *= ((Configs.fastbreak) ? Configs.breakSpeed : 1f) * (((Configs.nofallmode == 0 || Configs.nofallmode == 4) && Configs.nofall) ? 0.25f : 1f);
         return hardness;
     }
 }
