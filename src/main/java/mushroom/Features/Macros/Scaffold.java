@@ -36,65 +36,6 @@ public class Scaffold {
     boolean flag = false;
     boolean scaffoldon = false;
 
-
-    @SubscribeEvent
-    public void tick(TickEvent.PlayerTickEvent e) {
-
-
-        if (Configs.placemindelay > Configs.placemaxdelay) {
-            float temp = Configs.placemindelay;
-            Configs.placemindelay = Configs.placemaxdelay;
-            Configs.placemaxdelay = temp;
-        }
-
-
-        if (PlayerLib.inGame() && Configs.scaffold != scaffoldon) {
-            if (!Configs.scaffold) {
-                if (Configs.blockswap == 1) mc.getNetHandler().getNetworkManager().sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-            }
-        }
-        scaffoldon = Configs.scaffold;
-
-
-
-
-        // tick place
-        if (Configs.scaffold && Configs.placetime == 1) {
-            final int selectedSlot = this.getBlock();
-            if (selectedSlot == -1) {
-                return;
-            }
-            if (Configs.blockswap == 1)
-                mc.getNetHandler().getNetworkManager().sendPacket(new C09PacketHeldItemChange(selectedSlot));
-            else PlayerLib.swapToSlot(selectedSlot);
-
-
-            if (this.ticks <= 0 && (mc.thePlayer.motionY <= Configs.maxYVeloc || !Configs.maxYVelo)) {
-                if (rayrace != null && rayrace.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.theWorld.getBlockState(rayrace.getBlockPos()).getBlock().isFullBlock()) {
-
-                    if (mc.gameSettings.keyBindJump.isKeyDown() && !PlayerLib.isOverAir() && (Configs.towermode == 0)) {
-                        if ((!PlayerLib.isInsideBlock()) && rayrace.getBlockPos().getY() < mc.thePlayer.posY) {
-                            mc.thePlayer.swingItem();
-                            this.placeBlock();
-                        }
-                    } else if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getStackInSlot(selectedSlot), rayrace.getBlockPos(), rayrace.sideHit, rayrace.hitVec)) {
-                        mc.thePlayer.swingItem();
-                    }
-                    if (!this.flag) {
-                        this.ticks = (int) ((Configs.placemindelay) + new Random().nextInt((int) ((Configs.placemaxdelay) - (Configs.placemindelay) + 1.0)));
-                    } else {
-                        this.ticks = (int) Math.max(2, (Configs.placemindelay) + new Random().nextInt((int) ((Configs.placemaxdelay) - (Configs.placemindelay) + 1.0)));
-                    }
-                    if (mc.thePlayer.inventory.getStackInSlot(selectedSlot) != null && mc.thePlayer.inventory.getStackInSlot(selectedSlot).stackSize <= 0) {
-                        mc.thePlayer.inventory.removeStackFromSlot(selectedSlot);
-                    }
-
-                }
-            }
-            --this.ticks;
-        }
-    }
-
     MovingObjectPosition rayrace = null;
 
     @SubscribeEvent
@@ -148,49 +89,6 @@ public class Scaffold {
 
             rayrace = rayTrace(event.getRotation());
 
-            if (Configs.placetime == 0) {
-                final int selectedSlot = this.getBlock();
-                if (selectedSlot == -1) {
-                    return;
-                }
-                if (Configs.blockswap == 1)
-                    mc.getNetHandler().getNetworkManager().sendPacket(new C09PacketHeldItemChange(selectedSlot));
-                else PlayerLib.swapToSlot(selectedSlot);
-
-
-                if (this.ticks <= 0 && (mc.thePlayer.motionY <= Configs.maxYVeloc || !Configs.maxYVelo)) {
-                    if (rayrace != null && rayrace.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.theWorld.getBlockState(rayrace.getBlockPos()).getBlock().isFullBlock()) {
-
-                        if (mc.gameSettings.keyBindJump.isKeyDown() && !PlayerLib.isOverAir() && (Configs.towermode == 0)) {
-                            if (!PlayerLib.isInsideBlock()) {
-                                mc.thePlayer.swingItem();
-                                this.placeBlock();
-                            }
-                        } else if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getStackInSlot(selectedSlot), rayrace.getBlockPos(), rayrace.sideHit, rayrace.hitVec)) {
-                            mc.thePlayer.swingItem();
-                        }
-                        if (Configs.placemaxdelay != 0) {
-                            if (!this.flag) {
-                                this.ticks = (int) ((Configs.placemindelay) + new Random().nextInt((int) ((Configs.placemaxdelay) - (Configs.placemindelay) + 1.0)));
-                            } else {
-                                this.ticks = (int) Math.max(2, (Configs.placemindelay) + new Random().nextInt((int) ((Configs.placemaxdelay) - (Configs.placemindelay) + 1.0)));
-                            }
-                        }
-
-                        if (mc.thePlayer.inventory.getStackInSlot(selectedSlot) != null && mc.thePlayer.inventory.getStackInSlot(selectedSlot).stackSize <= 0) {
-                            mc.thePlayer.inventory.removeStackFromSlot(selectedSlot);
-                        }
-                    }
-                }
-                --this.ticks;
-            }
-
-        }
-    }
-
-    @SubscribeEvent
-    public void onUpdatePost(final MotionUpdateEvent.Post event) {
-        if (Configs.placetime == 2 && Configs.scaffold) {
             final int selectedSlot = this.getBlock();
             if (selectedSlot == -1) {
                 return;
@@ -211,17 +109,21 @@ public class Scaffold {
                     } else if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getStackInSlot(selectedSlot), rayrace.getBlockPos(), rayrace.sideHit, rayrace.hitVec)) {
                         mc.thePlayer.swingItem();
                     }
-                    if (!this.flag) {
-                        this.ticks = (int) ((Configs.placemindelay) + new Random().nextInt((int) ((Configs.placemaxdelay) - (Configs.placemindelay) + 1.0)));
-                    } else {
-                        this.ticks = (int) Math.max(2, (Configs.placemindelay) + new Random().nextInt((int) ((Configs.placemaxdelay) - (Configs.placemindelay) + 1.0)));
+                    if (Configs.placemaxdelay != 0) {
+                        if (!this.flag) {
+                            this.ticks = (int) ((Configs.placemindelay) + new Random().nextInt((int) ((Configs.placemaxdelay) - (Configs.placemindelay) + 1.0)));
+                        } else {
+                            this.ticks = (int) Math.max(2, (Configs.placemindelay) + new Random().nextInt((int) ((Configs.placemaxdelay) - (Configs.placemindelay) + 1.0)));
+                        }
                     }
+
                     if (mc.thePlayer.inventory.getStackInSlot(selectedSlot) != null && mc.thePlayer.inventory.getStackInSlot(selectedSlot).stackSize <= 0) {
                         mc.thePlayer.inventory.removeStackFromSlot(selectedSlot);
                     }
                 }
             }
             --this.ticks;
+
         }
     }
 

@@ -235,15 +235,19 @@ public class Killaura {
                 }
 
                 else {
+                    if (Configs.criticals && Configs.critMode == 0) Criticals.trySwing = true;
 
-                    if (Configs.autoblockmode != 4 || (!isBlocking && System.currentTimeMillis() - unblockTime > Configs.swingCooldown)) {
+                    if ((Configs.autoblockmode != 4 || (!isBlocking && System.currentTimeMillis() - unblockTime > Configs.swingCooldown))
+                            && ((!Configs.criticals || Configs.critMode != 0) || Criticals.canSwing || !mc.thePlayer.onGround)
+                    ) {
+
                         mc.thePlayer.swingItem();
 
                         if (Configs.autoblockmode == 4 && mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) {
                             lastSwung = System.currentTimeMillis();
                         }
 
-                        if (mc.thePlayer.getDistanceToEntity(target) < (Configs.aurareach) || (Configs.backtrack && target.getDistanceToEntity(mc.thePlayer) < (float) Configs.backtrackreach && target == BackTrack.entitytoattack)) {
+                        if (mc.thePlayer.getDistanceToEntity(target) < (Configs.aurareach) || (Configs.backtrack && target.getDistanceToEntity(mc.thePlayer) < Configs.backtrackreach && target == BackTrack.entitytoattack)) {
                             if ((RotationUtils.getRotationDifference(RotationUtils.getRotations(target), RotationUtils.getLastReportedRotation()) < Configs.auraaccuracy) || (Configs.backtrack && BackTrack.positionarray.size() >= 2 && target == BackTrack.entitytoattack && RotationUtils.getRotationDifference(RotationUtils.getRotations(BackTrack.positionarray.get(0), BackTrack.positionarray.get(1) + 1.75, BackTrack.positionarray.get(2)), RotationUtils.getLastReportedRotation()) < Configs.auraaccuracy)) {
                                 mc.playerController.attackEntity(mc.thePlayer, target);
                                 if (this.switchDelayTimer.hasTimePassed((long) Configs.switchdelay)) {

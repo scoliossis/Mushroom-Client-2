@@ -16,8 +16,7 @@ public class PacketSentEvent extends Event {
         return this.packet;
     }
 
-    public static class Post extends Event
-    {
+    public static class Post extends Event {
         public Packet<?> packet;
 
         public Post(final Packet<?> packet) {

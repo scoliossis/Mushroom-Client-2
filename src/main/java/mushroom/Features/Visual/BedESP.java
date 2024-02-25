@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBed;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
@@ -91,62 +92,78 @@ public class BedESP {
             }
 
 
-            if (Configs.bedPlaters) {
-                // new for loop, fuck fps it looks better
-                // (if this runs before the one above it loses color because im stupid or smth and suck at opengl)
-                for (int i = 0; i < beds.size(); i++) {
-                    BlockPos bed = beds.get(i);
-                    if (Fucker.blockMining != bed) {
-                        if (!blockAtPos(bed).isBedFoot(mc.theWorld, bed)) {
-                            GlStateManager.alphaFunc(516, 0.1f);
-                            final double x = (bed.getX() - mc.thePlayer.lastTickPosX - (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * event.partialTicks) + 0.5f;
-                            final double y = (bed.getY() - mc.thePlayer.lastTickPosY - (mc.thePlayer.posY - mc.thePlayer.lastTickPosY) * event.partialTicks);
-                            final double z = (bed.getZ() - mc.thePlayer.lastTickPosZ - (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * event.partialTicks) + 0.5f;
-                            final float f = (float) Math.max(1.4f, PlayerLib.distanceToPlayer(x, y, z) / 100f);
-                            final float scale = 0.016666668f * f;
-                            GlStateManager.pushMatrix();
-                            GlStateManager.translate((float) x, (float) y + 1.5f, (float) z);
-                            GL11.glNormal3f(0.0f, 1.0f, 0.0f);
-                            GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
-                            GlStateManager.rotate(mc.getRenderManager().playerViewX, 1.0f, 0.0f, 0.0f);
-                            GlStateManager.scale(-scale, -scale, scale);
-                            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+            try {
+                if (Configs.bedPlaters) {
+                    // new for loop, fuck fps it looks better
+                    // (if this runs before the one above it loses color because im stupid or smth and suck at opengl)
+                    if (!beds.isEmpty()) {
+                        GlStateManager.alphaFunc(516, 0.1f);
 
-                            GlStateManager.disableDepth();
-                            GlStateManager.disableCull();
+                        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+                        GlStateManager.pushMatrix();
 
-                            ArrayList<BlockPos> blocks = new ArrayList<>();
-                            int h = 1;
-                            while (!(blockAtPos(new BlockPos(bed.getX(), bed.getY() + h, bed.getZ())) instanceof BlockAir) && (h < 2 || !Configs.bedPlates1Laye)) {
-                                blocks.add(new BlockPos(bed.getX(), bed.getY() + h, bed.getZ()));
-                                h++;
-                            }
 
-                            if (!blocks.isEmpty()) {
-                                RenderLib.drawRoundedRect2(((-10 * blocks.size()) / 2f) - 1, -6, ((10 * blocks.size())) + 1 + blocks.size(), 12, 6, new Color(30, 30, 30, 100).getRGB(), false);
+                        GlStateManager.disableDepth();
+                        GlStateManager.disableCull();
+                        GlStateManager.disableLighting();
 
-                                GlStateManager.translate(((-10 * blocks.size()) / 2f) - 6, 0, 0);
-                                GlStateManager.scale(10, 10, 0);
+                        for (int i = 0; i < beds.size(); i++) {
+                            BlockPos bed = beds.get(i);
+                            if (blockAtPos(bed).isBed(mc.theWorld, bed, mc.thePlayer) && !blockAtPos(bed).isBedFoot(mc.theWorld, bed)) {
 
-                                for (int n = 0; n < blocks.size(); n++) {
-                                    GlStateManager.translate(1.1, 0, 0);
-                                    mc.getItemRenderer().renderItem(mc.thePlayer, new ItemStack(blockAtPos(blocks.get(n))), null);
+                                final double x = (bed.getX() - mc.thePlayer.lastTickPosX - (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * event.partialTicks) + 0.5f;
+                                final double y = (bed.getY() - mc.thePlayer.lastTickPosY - (mc.thePlayer.posY - mc.thePlayer.lastTickPosY) * event.partialTicks);
+                                final double z = (bed.getZ() - mc.thePlayer.lastTickPosZ - (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * event.partialTicks) + 0.5f;
+                                final float f = (float) Math.max(1.4f, PlayerLib.distanceToPlayer(x, y, z) / 100f);
+                                final float scale = 0.016666668f * f;
+                                GlStateManager.translate((float) x, (float) y + 1.5f, (float) z);
+                                GL11.glNormal3f(0.0f, 1.0f, 0.0f);
+                                GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
+                                GlStateManager.rotate(mc.getRenderManager().playerViewX, 1.0f, 0.0f, 0.0f);
+                                GlStateManager.scale(-scale, -scale, scale);
+
+
+
+                                ArrayList<BlockPos> blocks = new ArrayList<>();
+                                int h = 1;
+                                while (!(blockAtPos(new BlockPos(bed.getX(), bed.getY() + h, bed.getZ())) instanceof BlockAir) && (h < 2 || !Configs.bedPlates1Laye)) {
+                                    blocks.add(new BlockPos(bed.getX(), bed.getY() + h, bed.getZ()));
+                                    h++;
+                                }
+
+                                if (!blocks.isEmpty()) {
+                                    RenderLib.drawRoundedRect2(((-10 * blocks.size()) / 2f) - 1, -6, ((10 * blocks.size())) + 1 + blocks.size(), 12, 6, new Color(30, 30, 30, 100).getRGB(), false);
+
+                                    GlStateManager.translate(((-10 * blocks.size()) / 2f) - 6, 0, 0);
+                                    GlStateManager.scale(10, 10, 0);
+
+                                    for (int n = 0; n < blocks.size(); n++) {
+                                        GlStateManager.translate(1.1, 0, 0);
+
+                                        try {
+                                            ItemStack block = new ItemStack(blockAtPos(blocks.get(n)));
+                                            mc.getItemRenderer().renderItem(mc.thePlayer, block, null);
+                                        } catch (Exception e) {
+                                            //e.printStackTrace();
+                                        }
+                                    }
                                 }
                             }
-
-                            GlStateManager.enableTexture2D();
-                            GlStateManager.enableCull();
-                            GlStateManager.enableDepth();
-
-                            GlStateManager.scale(1, 1, 1);
-                            GlStateManager.enableLighting();
-                            GlStateManager.disableBlend();
-                            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-                            GlStateManager.popMatrix();
                         }
+
+                        GlStateManager.disableBlend();
+                        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+                        GlStateManager.popMatrix();
+
+                        GlStateManager.enableCull();
+                        GlStateManager.enableDepth();
+                        GlStateManager.enableLighting();
                     }
                 }
+            } catch (Exception e){
+                // nah this errors all the time fuck this
             }
+
         }
     }
 }

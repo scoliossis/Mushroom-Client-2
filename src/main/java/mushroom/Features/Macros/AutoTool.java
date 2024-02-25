@@ -4,6 +4,7 @@ import mushroom.GUI.Configs;
 import mushroom.Libs.MillisTimer;
 import mushroom.Libs.PlayerLib;
 import mushroom.Libs.events.PacketSentEvent;
+import mushroom.mixins.C03Accessor;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemSpade;
@@ -40,13 +41,14 @@ public class AutoTool {
             }
             PlayerLib.syncHeldItem();
         }
-        else if (this.delay.hasTimePassed(500L) && !mc.thePlayer.isUsingItem() && Configs.autotoolWeapon && event.packet instanceof C02PacketUseEntity && ((C02PacketUseEntity)event.packet).getAction() == C02PacketUseEntity.Action.ATTACK) {
+        else if (this.delay.hasTimePassed(50) && !mc.thePlayer.isUsingItem() && Configs.autotoolWeapon && event.packet instanceof C02PacketUseEntity && ((C02PacketUseEntity)event.packet).getAction() == C02PacketUseEntity.Action.ATTACK) {
             for (int i = 0; i < 9; ++i) {
                 final ItemStack stack = mc.thePlayer.inventory.getStackInSlot(i);
                 if (stack != null && getToolDamage(stack) > ((mc.thePlayer.inventory.getCurrentItem() == null) ? 0.0f : getToolDamage(mc.thePlayer.inventory.getCurrentItem()))) {
                     mc.thePlayer.inventory.currentItem = i;
                 }
             }
+
             PlayerLib.syncHeldItem();
         }
         if ((event.packet instanceof C09PacketHeldItemChange && mc.thePlayer.inventory.getStackInSlot(((C09PacketHeldItemChange)event.packet).getSlotId()) != null) || (event.packet instanceof C08PacketPlayerBlockPlacement && ((C08PacketPlayerBlockPlacement)event.packet).getStack() != null)) {

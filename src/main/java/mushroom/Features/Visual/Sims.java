@@ -41,10 +41,6 @@ public class Sims {
 
         int angles = (int) Configs.angles;
 
-        GlStateManager.disableDepth();
-        GlStateManager.disableCull();
-        //GlStateManager.disableTexture2D();
-
         for (int i = 0; i <= angles; ++i) {
             final Color color = getColor(i, (int)angles, false);
             GL11.glColor4f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, 0.5f);
@@ -83,9 +79,6 @@ public class Sims {
             }
             GL11.glVertex3d(0.0, -Configs.heightCrystal, 0.0);
         }
-
-        GlStateManager.enableDepth();
-        GlStateManager.enableCull();
 
         GL11.glEnd();
         GL11.glShadeModel(7424);

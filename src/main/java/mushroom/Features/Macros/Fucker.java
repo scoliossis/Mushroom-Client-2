@@ -15,6 +15,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import tv.twitch.chat.Chat;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -137,18 +138,18 @@ public class Fucker {
         }
 
         if (Configs.fuckerMode != 1) {
-            if (currentDamage <= 1) {
+            float maxBreak = (2-Configs.fuckerBreakSpeed) * (((Configs.nofallmode == 0 || Configs.nofallmode == 4) && Configs.nofall) ? 4f : 1f);
+            if (currentDamage <= maxBreak) {
                 if (checkIfWeUp(pos) && mc.thePlayer.inventory.currentItem == startSlot && PlayerLib.distanceToPlayer(pos.getX(), pos.getY(), pos.getZ()) <= Configs.fuckerReach) {
                     currentDamage += mc.theWorld.getBlockState(pos).getBlock().getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, pos);
-                    mc.theWorld.sendBlockBreakProgress(mc.thePlayer.getEntityId(), pos, (int) (currentDamage * 10F)-1);
+                    float damagePercent = Math.min(Math.max(currentDamage/(2-Configs.fuckerBreakSpeed) * (((Configs.nofallmode == 0 || Configs.nofallmode == 4) && Configs.nofall) ? 0.25f : 1f), 0), 1);
+                    mc.theWorld.sendBlockBreakProgress(mc.thePlayer.getEntityId(), pos, (int) (damagePercent * 10F)-1);
                 } else {
                     if (!(blockAtPos(pos) instanceof BlockAir)) {
                         if (PlayerLib.distanceToPlayer(pos.getX(), pos.getY(), pos.getZ()) > Configs.fuckerReach) Notifications.popupmessage("Fucker", "§cwent out of range of bed");
 
                         // annoying ass notification if ur using auto tool, will fix one day
                         //else Notifications.popupmessage("Fucker", "§cswapped hotbar slots");
-
-
                     }
 
                     mining = false;
@@ -190,7 +191,7 @@ public class Fucker {
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {
         if (Configs.fucker) {
-            float dam = Math.min(Math.max(currentDamage, 0), 1);
+            float dam = Math.min(Math.max(currentDamage/(2-Configs.fuckerBreakSpeed) * (((Configs.nofallmode == 0 || Configs.nofallmode == 4) && Configs.nofall) ? 0.25f : 1f), 0), 1);
 
             int num = (int) (dam * 255);
 

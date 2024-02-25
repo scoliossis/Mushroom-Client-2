@@ -51,10 +51,10 @@ public class ESP {
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {
-        if (Configs.playeresp && PlayerLib.inGame()) {
+        if (PlayerLib.inGame()) {
             for (final EntityPlayer entityPlayer : mc.theWorld.playerEntities) {
                 if ((AntiBot.isValidEntity(entityPlayer))) {
-                    if (Configs.twoDee && entityPlayer != mc.thePlayer) RenderLib.draw2D(entityPlayer, event.partialTicks, 1.0f, new Color(174, 120, 203));
+                    if (Configs.twoDee && Configs.playeresp && entityPlayer != mc.thePlayer) RenderLib.draw2D(entityPlayer, event.partialTicks, 1.0f, new Color(174, 120, 203));
                     if (Configs.simsESP && entityPlayer != mc.thePlayer) Sims.drawPointyCircle(entityPlayer, event.partialTicks);
                 }
             }

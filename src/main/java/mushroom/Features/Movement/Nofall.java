@@ -28,11 +28,11 @@ public class Nofall {
             if (!PlayerLib.isOverVoid()) {
                 switch(Configs.nofallmode){
                     case 1:
-                        if (mc.thePlayer.fallDistance > (float) Configs.nofallheight / 10) {
+                        if (mc.thePlayer.fallDistance > Configs.nofallheight) {
                             event.setOnGround(true);
                         }
                     case 2:
-                        if (mc.thePlayer.fallDistance > (float) Configs.nofallheight / 10) {
+                        if (mc.thePlayer.fallDistance > Configs.nofallheight) {
                             mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer(true));
                             mc.thePlayer.fallDistance = 0;
                         }
@@ -68,6 +68,16 @@ public class Nofall {
                 }
             }
             else if (Configs.nofallmode == 0) {
+                ((C03Accessor)event.packet).setOnGround(false);
+            }
+        }
+    }
+
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onPack(PacketSentEvent.Post event) {
+        if (Configs.nofall && event.packet instanceof C03PacketPlayer) {
+            if (Configs.nofallmode == 4) {
                 ((C03Accessor)event.packet).setOnGround(false);
             }
         }
