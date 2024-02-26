@@ -65,7 +65,7 @@ public class PlayerSPMixin {
 
         }
 
-        if (Configs.speed && mc.thePlayer.getFoodStats().getFoodLevel() > 6.0f && !mc.thePlayer.isSprinting()) {
+        if (Configs.speed && mc.thePlayer.getFoodStats().getFoodLevel() > 6.0f && !mc.thePlayer.isSprinting() && MovementLib.isMoving()) {
             mc.thePlayer.setSprinting(true);
         }
 

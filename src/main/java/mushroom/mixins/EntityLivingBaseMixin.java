@@ -3,6 +3,7 @@ package mushroom.mixins;
 import com.google.common.collect.Maps;
 import mushroom.Features.Combat.Killaura;
 import mushroom.GUI.Configs;
+import mushroom.Libs.MovementLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
@@ -14,6 +15,8 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Map;
+
+import static mushroom.Libs.PlayerLib.mc;
 
 
 @Mixin({ EntityLivingBase.class })
@@ -63,7 +66,7 @@ public class EntityLivingBaseMixin extends EntityMixin {
 
     @Shadow
     public PotionEffect getActivePotionEffect(Potion p_getActivePotionEffect_1_) {
-        return (PotionEffect)this.activePotionsMap.get(p_getActivePotionEffect_1_.id);
+        return this.activePotionsMap.get(p_getActivePotionEffect_1_.id);
     }
 
 
@@ -79,10 +82,10 @@ public class EntityLivingBaseMixin extends EntityMixin {
         }
 
         if (this.isSprinting()) {
-            float f = this.rotationYaw * 0.017453292F;
-            if ((moveForward > 0 || !Configs.sprint) && !Configs.speed) {
-                this.motionX -= (MathHelper.sin(f) * 0.2F);
-                this.motionZ += (MathHelper.cos(f) * 0.2F);
+            float f = MovementLib.getYaw() * 0.017453292F;
+            if (!Minecraft.getMinecraft().thePlayer.isUsingItem()) {
+                mc.thePlayer.motionX -= MathHelper.sin(f) * 0.2f;
+                mc.thePlayer.motionZ += MathHelper.cos(f) * 0.2f;
             }
         }
 

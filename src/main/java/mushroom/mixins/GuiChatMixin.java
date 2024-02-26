@@ -13,28 +13,28 @@ import org.spongepowered.asm.mixin.Mixin;
 public abstract class GuiChatMixin extends GuiScreenMixin {
     @Inject(method = { "drawScreen" }, at = { @At("RETURN") })
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks, final CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post((Event)new GuiChatEvent.DrawChatEvent(mouseX, mouseY))) {
+        if (MinecraftForge.EVENT_BUS.post(new GuiChatEvent.DrawChatEvent(mouseX, mouseY))) {
             ci.cancel();
         }
     }
 
     @Inject(method = { "keyTyped" }, at = { @At("RETURN") })
     public void keyTyped(final char typedChar, final int keyCode, final CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post((Event)new GuiChatEvent.KeyTyped(keyCode, typedChar))) {
+        if (MinecraftForge.EVENT_BUS.post(new GuiChatEvent.KeyTyped(keyCode, typedChar))) {
             ci.cancel();
         }
     }
 
     @Inject(method = { "mouseClicked" }, at = { @At("RETURN") })
     public void mouseClicked(final int mouseX, final int mouseY, final int mouseButton, final CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post((Event)new GuiChatEvent.MouseClicked(mouseX, mouseY, mouseButton))) {
+        if (MinecraftForge.EVENT_BUS.post(new GuiChatEvent.MouseClicked(mouseX, mouseY, mouseButton))) {
             ci.cancel();
         }
     }
 
     @Override
     protected void mouseReleased(final int mouseX, final int mouseY, final int state) {
-        MinecraftForge.EVENT_BUS.post((Event)new GuiChatEvent.MouseReleased(mouseX, mouseY, state));
+        MinecraftForge.EVENT_BUS.post(new GuiChatEvent.MouseReleased(mouseX, mouseY, state));
     }
 
     @Inject(method = { "onGuiClosed" }, at = { @At("RETURN") })
