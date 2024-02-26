@@ -1,6 +1,7 @@
 package mushroom.Libs;
 
 import mushroom.Features.Combat.Killaura;
+import mushroom.GUI.Configs;
 import mushroom.mixins.PlayerSPAccessor;
 import net.minecraft.entity.Entity;
 
@@ -139,7 +140,7 @@ public class MovementLib {
     }
 
     public static float getYaw() {
-        float yaw = Killaura.target != null ? RotationUtils.getRotations(Killaura.target).getYaw() : mc.thePlayer.rotationYaw;
+        float yaw = (Killaura.target != null && Configs.moveFixAura) ? RotationUtils.getRotations(Killaura.target).getYaw() : mc.thePlayer.rotationYaw;
         if (mc.thePlayer.moveForward < 0.0f) {
             yaw += 180.0f;
         }

@@ -154,7 +154,7 @@ public class Configs {
     @Property(type = Property.Type.BOOLEAN, name = "Criticals", description = "i NEED damage.", parent = "Combat")
     public static boolean criticals = false;
 
-    @Property(type = Property.Type.SELECT, name = "Criticals Mode", description = "what mode", parent = "Criticals", options = {"test1", "test2", "test3"})
+    @Property(type = Property.Type.SELECT, name = "Criticals Mode", description = "what mode", parent = "Criticals", options = {"hypixel", "ncp"})
     public static int critMode = 0;
     @Property(type = Property.Type.NUMBER, name = "Fall Distance", description = "i NEED damage.", parent = "Criticals Mode", modereq = 0, max = 5)
     public static float noFallJumps = 0;
@@ -386,7 +386,7 @@ public class Configs {
     public static boolean bedESP = true;
     @Property(type = Property.Type.BOOLEAN, name = "Bed Plate", description = "shows every block surrounding", parent = "Bed Plates")
     public static boolean bedPlaters = true;
-    @Property(type = Property.Type.BOOLEAN, name = "Only 1 high", description = "only shows the block above", parent = "Bed Plates")
+    @Property(type = Property.Type.BOOLEAN, name = "Only 1 high", description = "only shows the block above", parent = "Bed Plate")
     public static boolean bedPlates1Laye = true;
 
     // ------------------------------------------------------------
@@ -405,6 +405,8 @@ public class Configs {
     public static boolean speed = false;
     @Property(type = Property.Type.SELECT, name = "Speed Mode", description = "allows you to move faster", parent = "Speed", options = {"vanilla", "ground strafe"})
     public static int speedmode = 0;
+    @Property(type = Property.Type.BOOLEAN, name = "Auto Jump", description = "auto jump speed", parent = "Speed Mode", modereq = 0)
+    public static boolean autoJumpSpeed = false;
     @Property(type = Property.Type.NUMBER, name = "Speed Speed", description = "speed of the speed", parent = "Speed", modereq = 0, min = 0.01f, max = 5)
     public static float speedspeed = 3;
 

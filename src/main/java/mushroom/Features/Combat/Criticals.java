@@ -36,8 +36,8 @@ public class Criticals {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPacket(PacketSentEvent event) {
-        if (Configs.criticals && Configs.critMode != 0 && event.packet instanceof C02PacketUseEntity && ((C02PacketUseEntity)event.packet).getAction() == C02PacketUseEntity.Action.ATTACK && ((C02PacketUseEntity)event.packet).getEntityFromWorld(mc.theWorld) instanceof EntityLivingBase && ((EntityLivingBase)((C02PacketUseEntity)event.packet).getEntityFromWorld(mc.theWorld)).hurtTime <= 1) {
-            this.attack = (C02PacketUseEntity)event.packet;
+        if (Configs.criticals && Configs.critMode != 0 && event.packet instanceof C02PacketUseEntity && ((C02PacketUseEntity)event.packet).getAction() == C02PacketUseEntity.Action.ATTACK && ((C02PacketUseEntity)event.packet).getEntityFromWorld(mc.theWorld) instanceof EntityLivingBase && ((EntityLivingBase)((C02PacketUseEntity)event.packet).getEntityFromWorld(mc.theWorld)).hurtTime <= 1 && mc.thePlayer.onGround) {
+            attack = (C02PacketUseEntity)event.packet;
             event.setCanceled(true);
             return;
         }
@@ -66,7 +66,7 @@ public class Criticals {
                         ((C03Accessor) event.packet).setOnGround(true);
                         fallDist = 0;
                     }
-                    Speed.jump();
+                    Speed.jump(0.2f);
                 }
 
                 prevY = mc.thePlayer.posY;
@@ -80,40 +80,23 @@ public class Criticals {
 
     @SubscribeEvent
     public void onUpdate(final MotionUpdateEvent.Pre event) {
-        if (Configs.criticals && this.attack != null) {
-            switch (Configs.critMode) {
-                case 1: {
-                    if (mc.thePlayer.onGround && event.onGround && this.attack.getEntityFromWorld(mc.theWorld) instanceof EntityLivingBase && ((EntityLivingBase)this.attack.getEntityFromWorld(mc.theWorld)).hurtTime <= 1) {
-                        mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(((PlayerSPAccessor)mc.thePlayer).getLastReportedPosX(), ((PlayerSPAccessor)mc.thePlayer).getLastReportedPosY() +  0.0625f + MathLib.getRandomInRange(0.0, 0.0010000000474974513), ((PlayerSPAccessor)mc.thePlayer).getLastReportedPosZ(), false));
-                        mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(((PlayerSPAccessor)mc.thePlayer).getLastReportedPosX(), ((PlayerSPAccessor)mc.thePlayer).getLastReportedPosY() + 0.03125f + MathLib.getRandomInRange(0.0, 0.0010000000474974513), ((PlayerSPAccessor)mc.thePlayer).getLastReportedPosZ(), false));
-                        PacketUtils.sendPacketNoEvent(this.attack);
-                        this.attack = null;
-                        break;
+        if (Configs.criticals && attack != null) {
+            if (Configs.critMode == 1) {
+                if (event.onGround) {
+                    ticks++;
+                    if (ticks == 1) event.y += 0.0625f + MathLib.getRandomInRange(0.0, 0.0010000000474974513);
+                    event.setOnGround(false);
+                    mc.thePlayer.onGround = false;
+                    if (ticks > 2) {
+                        PacketUtils.sendPacketNoEvent(attack);
+                        attack = null;
+                        ticks = 0;
                     }
-                    this.attack = null;
-                    break;
                 }
-                case 2: {
-                    if (mc.thePlayer.onGround && event.onGround && this.attack.getEntityFromWorld(mc.theWorld) instanceof EntityLivingBase && ((EntityLivingBase)this.attack.getEntityFromWorld(mc.theWorld)).hurtTime <= 1) {
-                        switch (this.ticks++) {
-                            case 0:
-                            case 1: {
-                                event.y += 0.0625f + MathLib.getRandomInRange(0.0, 0.0010000000474974513);
-                                event.setOnGround(false);
-                                break;
-                            }
-                            case 2: {
-                                PacketUtils.sendPacketNoEvent(this.attack);
-                                this.ticks = 0;
-                                this.attack = null;
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    this.ticks = 0;
-                    this.attack = null;
-                    break;
+                else {
+                    PacketUtils.sendPacketNoEvent(attack);
+                    attack = null;
+                    ticks = 0;
                 }
             }
         }

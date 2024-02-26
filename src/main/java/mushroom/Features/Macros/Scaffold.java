@@ -39,7 +39,7 @@ public class Scaffold {
     MovingObjectPosition rayrace = null;
 
     @SubscribeEvent
-    public void onUpdate(final MotionUpdateEvent.Pre event) {
+    public void onUpdate(final MotionUpdateEvent event) {
 
         if (Configs.scaffold && !AntiVoid.isBlinking()) {
 
@@ -159,7 +159,7 @@ public class Scaffold {
     private BlockPos getClosestBlock() {
         final ArrayList<Vec3> posList = new ArrayList<Vec3>();
         for (int range = (int) Configs.scaffolddist, x = -range; x <= range; x++) {
-            for (int y = (int) (-Configs.scaffolddist + 2); y < 0; y++) {
+            for (int y = -5; y < -2; y++) {
                 for (int z = -range; z <= range; z++) {
                     final Vec3 vec = new Vec3(x, y, z).addVector(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ);
                     final BlockPos pos2 = new BlockPos(vec);

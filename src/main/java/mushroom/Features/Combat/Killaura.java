@@ -235,11 +235,7 @@ public class Killaura {
                 }
 
                 else {
-                    if (Configs.criticals && Configs.critMode == 0) Criticals.trySwing = true;
-
-                    if ((Configs.autoblockmode != 4 || (!isBlocking && System.currentTimeMillis() - unblockTime > Configs.swingCooldown))
-                            && ((!Configs.criticals || Configs.critMode != 0) || Criticals.canSwing || !mc.thePlayer.onGround)
-                    ) {
+                    if ((Configs.autoblockmode != 4 || (!isBlocking && System.currentTimeMillis() - unblockTime > Configs.swingCooldown))) {
 
                         mc.thePlayer.swingItem();
 
@@ -323,7 +319,7 @@ public class Killaura {
 
 
     @SubscribeEvent
-    public void onMoveFlying(final MoveFlyingEvent event) {
+    public void onMoveFlying(MoveFlyingEvent event) {
         if (Configs.killaura && target != null && Configs.moveFixAura) {
             event.setYaw(((PlayerSPAccessor)mc.thePlayer).getLastReportedYaw());
         }

@@ -34,7 +34,13 @@ public class Speed {
                 if (Configs.timeronspeed)
                     ((MinecraftAccessor) Minecraft.getMinecraft()).getTimer().timerSpeed = Configs.timerspeedonspeed;
                 if (MovementLib.isMoving()) {
+                    if (Configs.autoJumpSpeed) jump(0.2f);
                     event.setYaw(MovementLib.getYaw());
+                }
+            }
+            else if (Configs.speedmode == 1 && MovementLib.isMoving()) {
+                if (Minecraft.getMinecraft().thePlayer.onGround) {
+                    jump(0.2f * Configs.speedspeed);
                 }
             }
         }
@@ -43,22 +49,8 @@ public class Speed {
 
     @SubscribeEvent
     public void onMove(final MoveEvent event) {
-        if (Configs.speed && inGame()) {
-            if (Configs.speedmode == 0) MovementLib.setMotion(Configs.speedspeed);
-            else if (Configs.speedmode == 1) {
-                if (Minecraft.getMinecraft().thePlayer.onGround) {
-                    this.jump();
-                } else {
-                    MovementLib.setMotion(0.079825, true, Configs.speedspeed);
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onUpdateMove(final MoveStateUpdateEvent event) {
         if (Configs.speed) {
-            event.setSneak(false);
+            if (Configs.speedmode == 0) MovementLib.setMotion(Configs.speedspeed);
         }
     }
 
@@ -79,14 +71,12 @@ public class Speed {
     }
      */
 
-    public static void jump() {
+    public static void jump(float speedMulti) {
         Minecraft.getMinecraft().thePlayer.motionY = 0.41999998688697815;
         if (Minecraft.getMinecraft().thePlayer.isSprinting()) {
             final float f = MovementLib.getYaw() * 0.017453292f;
-            final EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
-            thePlayer.motionX -= MathHelper.sin(f) * 0.2f;
-            final EntityPlayerSP thePlayer2 = Minecraft.getMinecraft().thePlayer;
-            thePlayer2.motionZ += MathHelper.cos(f) * 0.2f;
+            mc.thePlayer.motionX -= MathHelper.sin(f) * speedMulti;
+            mc.thePlayer.motionZ += MathHelper.cos(f) * speedMulti;
         }
         Minecraft.getMinecraft().thePlayer.isAirBorne = true;
         Minecraft.getMinecraft().thePlayer.triggerAchievement(StatList.jumpStat);
