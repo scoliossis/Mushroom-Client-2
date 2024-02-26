@@ -4,4 +4,11 @@
 #### dm lesbiananimegirl for configs 
 #### or hf configing this yourself (i made the configing process too hard)
 
-![clickgui](https://cdn.discordapp.com/attachments/1199104751149781022/1211777804304257024/image.png?ex=65ef6f06&is=65dcfa06&hm=e32e91dbef0a9ac11f511cce6479c4be9c585b6356e0c3fda3c31fef6e2db3cb&)
+#### heck yeah clickgui, custom colors the built in colors are ugly
+![clickgui](https://i.imgur.com/oqEiuZQ.png)
+
+#### theres like 5 different gifs for the main menu
+![mainmenu](https://i.imgur.com/1RVRB1l.png)
+
+#### no microsoft account switcher, use essentials or smth :(
+![altmanager](https://i.imgur.com/kHpA4HU.png)
