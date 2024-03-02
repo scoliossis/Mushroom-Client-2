@@ -10,6 +10,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.ForgeHooks;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,6 +23,10 @@ import static mushroom.Libs.PlayerLib.mc;
 @Mixin({ EntityLivingBase.class })
 public class EntityLivingBaseMixin extends EntityMixin {
 
+    /**
+     * @author h
+     * @reason ignore haste
+     */
     @Overwrite
     private int getArmSwingAnimationEnd() {
         // ignore haste
@@ -35,6 +40,10 @@ public class EntityLivingBaseMixin extends EntityMixin {
     public float swingProgress;
 
 
+    /**
+     * @author h
+     * @reason h
+     */
     @Overwrite
     protected void updateArmSwingProgress() {
         float i = this.getArmSwingAnimationEnd();
@@ -56,6 +65,7 @@ public class EntityLivingBaseMixin extends EntityMixin {
         return 0.42F;
     }
 
+    @Final
     @Shadow
     private final Map<Integer, PotionEffect> activePotionsMap = Maps.newHashMap();
 
@@ -73,6 +83,11 @@ public class EntityLivingBaseMixin extends EntityMixin {
     @Shadow
     public float moveForward;
 
+    /**
+     * @author h
+     * @reason h
+     */
+
     // fixes moving forward when jumping with omnisprint
     @Overwrite
     protected void jump() {
@@ -83,7 +98,7 @@ public class EntityLivingBaseMixin extends EntityMixin {
 
         if (this.isSprinting()) {
             float f = MovementLib.getYaw() * 0.017453292F;
-            if (!Minecraft.getMinecraft().thePlayer.isUsingItem()) {
+            if (!Minecraft.getMinecraft().thePlayer.isUsingItem() || Configs.noslow) {
                 mc.thePlayer.motionX -= MathHelper.sin(f) * 0.2f;
                 mc.thePlayer.motionZ += MathHelper.cos(f) * 0.2f;
             }

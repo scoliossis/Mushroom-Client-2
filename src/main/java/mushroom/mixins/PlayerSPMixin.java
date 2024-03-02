@@ -8,6 +8,7 @@ import mushroom.Libs.RotationUtils;
 import mushroom.Libs.events.MotionUpdateEvent;
 import mushroom.Libs.events.MoveFlyingEvent;
 import mushroom.Libs.events.MoveHeadingEvent;
+import mushroom.Libs.events.PlayerUpdateEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.item.EnumAction;
@@ -84,7 +85,7 @@ public class PlayerSPMixin {
             }
 
             float sworrdSped = Configs.noslowswordspeed;
-            if ((Configs.killaura && Killaura.target != null && Killaura.isBlocking && Configs.autoblockSlowDown && mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword)) sworrdSped = 0.3f;
+            if ((Configs.killaura && Killaura.target != null && (Killaura.isBlocking || Configs.autoblockmode == 5 || Configs.autoblockmode == 6) && Configs.autoblockSlowDown && mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword)) sworrdSped = 0.3f;
 
             float bowSped = Configs.noslowbowspeed;
             float drrinkSped = Configs.nosloweatspeed;
@@ -104,6 +105,14 @@ public class PlayerSPMixin {
             }
         }
     }
+
+    @Inject(method = { "onUpdate" }, at = { @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isRiding()Z") }, cancellable = true)
+    private void onUpdate(final CallbackInfo ci) {
+        if (MinecraftForge.EVENT_BUS.post((Event)new PlayerUpdateEvent())) {
+            ci.cancel();
+        }
+    }
+
 
     /**
      * @author shoutout to notch

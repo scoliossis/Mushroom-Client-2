@@ -82,6 +82,18 @@ public class mushroom extends CommandBase {
     // store target hud pos, and other stuff
 
 
+    /*
+    as of 26/02/24 it has for hypixel:
+    - killaura
+    - bad autoblock
+    - criticals (bad and sometimes self damages...)
+    - sprint jump scaffold
+    - "noslow" (doesnt work w autoblock or food or bows)
+    - blink nofall ig? (toggle blink and groundspoof before dropping of block)
+    - omnisprint (u dont need a bypass for this)
+    - ground strafe speed
+     */
+
     public static final String MODID = "mushroom";
     public static final String VERSION = "4.0";
 
