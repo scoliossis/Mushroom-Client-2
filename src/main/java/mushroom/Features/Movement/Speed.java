@@ -3,6 +3,7 @@ import mushroom.Features.Visual.Notifications;
 import mushroom.GUI.Configs;
 import mushroom.Libs.FontLib.FontUtil;
 import mushroom.Libs.MovementLib;
+import mushroom.Libs.PlayerLib;
 import mushroom.Libs.TimerLib;
 import mushroom.Libs.events.*;
 import mushroom.mixins.MinecraftAccessor;
@@ -30,9 +31,11 @@ public class Speed {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onUpdate(final MotionUpdateEvent.Pre event) {
         if (Configs.speed) {
+
+            if (Configs.timeronspeed)
+                ((MinecraftAccessor) Minecraft.getMinecraft()).getTimer().timerSpeed = Configs.timerspeedonspeed;
+
             if (Configs.speedmode == 0) {
-                if (Configs.timeronspeed)
-                    ((MinecraftAccessor) Minecraft.getMinecraft()).getTimer().timerSpeed = Configs.timerspeedonspeed;
                 if (MovementLib.isMoving()) {
                     if (Configs.autoJumpSpeed) jump(0.2f);
                     event.setYaw(MovementLib.getYaw());
@@ -42,6 +45,13 @@ public class Speed {
                 if (Minecraft.getMinecraft().thePlayer.onGround) {
                     jump(0.2f * Configs.speedspeed);
                 }
+            }
+            else if (Configs.speedmode == 2 && MovementLib.isMoving()) {
+                if (Minecraft.getMinecraft().thePlayer.onGround) {
+                    jump(0.2f);
+                }
+                MovementLib.setMotion(0.07725f, true, Configs.speedspeed);
+
             }
         }
     }

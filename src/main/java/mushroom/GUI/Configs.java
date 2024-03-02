@@ -39,8 +39,10 @@ public class Configs {
     public static float maxrotation = 0;
     @Property(type = Property.Type.SELECT, name = "Killaura Sorting", description = "i am become death, destroyer of worlds (after i finish rotating)", parent = "Killaura", options = {"distance", "hurt"})
     public static int killaurasorting = 0;
-    @Property(type = Property.Type.SELECT, name = "Autoblock Mode", description = "helper pls he hit me :(", parent = "Killaura", options = {"none", "fake", "vanilla", "verus", "custom"})
+    @Property(type = Property.Type.SELECT, name = "Autoblock Mode", description = "helper pls he hit me :(", parent = "Killaura", options = {"none", "fake", "vanilla", "verus", "custom", "post", "reblock", "reblock legit"})
     public static int autoblockmode = 0;
+    @Property(type = Property.Type.NUMBER, name = "Reblock Delay", description = "always swings after a set amount of time", parent = "Autoblock Mode", modereq = 7, max = 500)
+    public static float reblockDelay = 75;
     @Property(type = Property.Type.BOOLEAN, name = "Show blocking", description = "shows if your blocking serverside or not", parent = "Autoblock Mode", modereq = 4)
     public static boolean showBlocking = true;
     @Property(type = Property.Type.BOOLEAN, name = "Max Hit Delay", description = "always swings after a set amount of time", parent = "Autoblock Mode", modereq = 4)
@@ -101,7 +103,7 @@ public class Configs {
     public static float blockreachdistance = 5;
     //@Property(type = Property.Type.BOOLEAN, name = "Aimbot", description = "locks on to opponents within reach", parent = "Combat")
     //public static boolean aimbot = false;
-    @Property(type = Property.Type.BOOLEAN, name = "Backtrack", description = "allows you to hit players from a previous position they were in (dont use)", parent = "Combat")
+    @Property(type = Property.Type.BOOLEAN, name = "Backtrack", description = "allows you to hit players from a previous position they were in (doesnt do anything, please make pr batman)", parent = "Combat")
     public static boolean backtrack = false;
     @Property(type = Property.Type.NUMBER, name = "Backtrack Time", description = "how far do you want to time travel", parent = "Backtrack", min = 1, max = 50)
     public static float backtracktime = 10;
@@ -403,7 +405,7 @@ public class Configs {
     //public static boolean invwalk = false;
     @Property(type = Property.Type.BOOLEAN, name = "Speed", description = "allows you to move faster", parent = "Movement")
     public static boolean speed = false;
-    @Property(type = Property.Type.SELECT, name = "Speed Mode", description = "allows you to move faster", parent = "Speed", options = {"vanilla", "ground strafe"})
+    @Property(type = Property.Type.SELECT, name = "Speed Mode", description = "allows you to move faster", parent = "Speed", options = {"vanilla", "ground strafe", "strafe"})
     public static int speedmode = 0;
     @Property(type = Property.Type.BOOLEAN, name = "Auto Jump", description = "auto jump speed", parent = "Speed Mode", modereq = 0)
     public static boolean autoJumpSpeed = false;
@@ -569,7 +571,7 @@ public class Configs {
     public static boolean safewalkScaffold = true;
     @Property(type = Property.Type.BOOLEAN, name = "Air Safe Scaffold", description = "safewalks when scaffold is on!", parent = "Safe Scaffold")
     public static boolean airSafewalkScaffold = false;
-    @Property(type = Property.Type.SELECT, name = "Rotation Pos", description = "where to look when scaffolding", parent = "Scaffold", options = {"closest", "random"})
+    @Property(type = Property.Type.SELECT, name = "Rotation Pos", description = "where to look when scaffolding", parent = "Scaffold", options = {"opposite yaw", "closest"})
     public static int rotpos = 0;
     @Property(type = Property.Type.SELECT, name = "Sprint Modes", description = "i wanna go fast", parent = "Scaffold", options = {"sprint", "semi", "verus", "none", "hypixel1", "hypixel2"})
     public static int scafsprintmode = 0;

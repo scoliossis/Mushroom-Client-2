@@ -82,11 +82,10 @@ public class Criticals {
     public void onUpdate(final MotionUpdateEvent.Pre event) {
         if (Configs.criticals && attack != null) {
             if (Configs.critMode == 1) {
-                if (event.onGround) {
+                if (event.onGround && !Configs.speed && !mc.gameSettings.keyBindJump.isKeyDown()) {
                     ticks++;
-                    if (ticks == 1) event.y += 0.0625f + MathLib.getRandomInRange(0.0, 0.0010000000474974513);
+                    if (ticks == 1) event.y += 0.0625f + MathLib.getRandomInRange(0.0001, 0.0010000000474974513);
                     event.setOnGround(false);
-                    mc.thePlayer.onGround = false;
                     if (ticks > 2) {
                         PacketUtils.sendPacketNoEvent(attack);
                         attack = null;

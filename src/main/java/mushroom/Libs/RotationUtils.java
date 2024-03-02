@@ -88,7 +88,7 @@ public class RotationUtils {
     }
 
 
-    public static int accuracy = 5;
+    public static int accuracy = 10;
     public static Vec3 getRandomVisibilityLine(final BlockPos pos) {
         final List<Vec3> lines = new ArrayList<Vec3>();
         for (int x = 0; x < accuracy; ++x) {
@@ -99,7 +99,7 @@ public class RotationUtils {
                     final MovingObjectPosition movingObjectPosition = Minecraft.getMinecraft().theWorld.rayTraceBlocks(Minecraft.getMinecraft().thePlayer.getPositionEyes(0.0f), target, true, false, true);
                     if (movingObjectPosition != null) {
                         final BlockPos obj = movingObjectPosition.getBlockPos();
-                        if (obj.equals((Object)test) && Minecraft.getMinecraft().thePlayer.getDistance(target.xCoord, target.yCoord - Minecraft.getMinecraft().thePlayer.getEyeHeight(), target.zCoord) < 4.5 && Math.abs(Minecraft.getMinecraft().thePlayer.posY - target.yCoord) < 1) {
+                        if (obj.equals(test) && Minecraft.getMinecraft().thePlayer.getDistance(target.xCoord, target.yCoord - Minecraft.getMinecraft().thePlayer.getEyeHeight(), target.zCoord) < 4.5 && Math.abs(Minecraft.getMinecraft().thePlayer.posY - target.yCoord) < 1) {
                             lines.add(target);
                         }
                     }

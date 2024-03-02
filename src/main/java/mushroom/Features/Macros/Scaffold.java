@@ -26,6 +26,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.Random;
 
 import static mushroom.Libs.PlayerLib.inGame;
@@ -34,7 +35,6 @@ import static mushroom.Libs.PlayerLib.mc;
 public class Scaffold {
     private int ticks = 0;
     boolean flag = false;
-    boolean scaffoldon = false;
 
     MovingObjectPosition rayrace = null;
 
@@ -43,39 +43,24 @@ public class Scaffold {
 
         if (Configs.scaffold && !AntiVoid.isBlinking()) {
 
-            event.setYaw(MovementLib.getYaw() + 180.0f).setPitch(81.0f);
-            //event.setYaw(RotationUtils.getSmoothRotation(RotationUtils.getLastReportedRotation(), new Rotations(MovementLib.getYaw() + 180.0f, 81.0f), Configs.scafrotspeed).getYaw());
+            final BlockPos pos = this.getClosestBlock();
+
+            Rotations rotation = new Rotations(MovementLib.getYaw()-180, 81);
+
+            if (Configs.rotpos == 1 && pos != null) {
+                rotation = RotationUtils.getRotations(RotationUtils.getClosestPointInAABB(mc.thePlayer.getPositionEyes(0f), mc.theWorld.getBlockState(pos).getBlock().getSelectedBoundingBox(mc.theWorld, pos)));
+            }
+
+            event.setYaw(rotation.getYaw());
             ((PlayerSPAccessor)mc.thePlayer).setLastReportedYaw(event.yaw);
             this.flag = true;
             for (int j = 81; j > 72; --j) {
                 final MovingObjectPosition trace = rayTrace(event.yaw, (float)j);
                 if (trace != null) {
                     this.flag = false;
-                    //event.setPitch(RotationUtils.getSmoothRotation(RotationUtils.getLastReportedRotation(), new Rotations(MovementLib.getYaw() + 180.0f, (float)(j + MathLib.getRandomInRange(0.1, -0.1))), Configs.scafrotspeed).getYaw());
                     event.setPitch((float)(j + MathLib.getRandomInRange(0.1, -0.1)));
                     ((PlayerSPAccessor)mc.thePlayer).setLastReportedPitch(event.pitch);
                     break;
-                }
-            }
-            if (this.flag) {
-                final BlockPos pos = this.getClosestBlock();
-                if (pos != null) {
-                    //final Rotations rotation = RotationUtils.getSmoothRotation(RotationUtils.getLastReportedRotation(), RotationUtils.getRotations(RotationUtils.getClosestPointInAABB(mc.thePlayer.getPositionEyes(1.0f), mc.theWorld.getBlockState(pos).getBlock().getSelectedBoundingBox(mc.theWorld, pos))), Configs.scafrotspeed);
-                    //final Rotations rotation = RotationUtils.getRotations(RotationUtils.getClosestPointInAABB(mc.thePlayer.getPositionEyes(1.0f), mc.theWorld.getBlockState(pos).getBlock().getSelectedBoundingBox(mc.theWorld, pos)));
-
-                    if (RotationUtils.isBlockVisible(pos)) {
-
-                        Rotations rotation = RotationUtils.getRotations(RotationUtils.getRandomVisibilityLine(pos));
-                        if (Configs.rotpos == 0) rotation = RotationUtils.getRotations(RotationUtils.getClosestPointInAABB(mc.thePlayer.getPositionEyes(1.0f), mc.theWorld.getBlockState(pos).getBlock().getSelectedBoundingBox(mc.theWorld, pos)));
-
-
-                        final MovingObjectPosition position = rayTrace(rotation);
-                        if (position != null) {
-                            event.setRotation(rotation);
-                            ((PlayerSPAccessor) mc.thePlayer).setLastReportedYaw(event.yaw);
-                            ((PlayerSPAccessor) mc.thePlayer).setLastReportedPitch(event.pitch);
-                        }
-                    }
                 }
             }
             if (mc.gameSettings.keyBindJump.isKeyDown()) {
@@ -90,32 +75,22 @@ public class Scaffold {
             rayrace = rayTrace(event.getRotation());
 
             final int selectedSlot = this.getBlock();
-            if (selectedSlot == -1) {
-                return;
+            if (selectedSlot == -1) return;
+
+            if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem()  instanceof ItemBlock)) {
+                if (Configs.blockswap == 1)
+                    mc.getNetHandler().getNetworkManager().sendPacket(new C09PacketHeldItemChange(selectedSlot));
+                else PlayerLib.swapToSlot(selectedSlot);
             }
-            if (Configs.blockswap == 1)
-                mc.getNetHandler().getNetworkManager().sendPacket(new C09PacketHeldItemChange(selectedSlot));
-            else PlayerLib.swapToSlot(selectedSlot);
 
 
             if (this.ticks <= 0 && (mc.thePlayer.motionY <= Configs.maxYVeloc || !Configs.maxYVelo)) {
                 if (rayrace != null && rayrace.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.theWorld.getBlockState(rayrace.getBlockPos()).getBlock().isFullBlock()) {
-
-                    if (mc.gameSettings.keyBindJump.isKeyDown() && !PlayerLib.isOverAir() && (Configs.towermode == 0)) {
-                        if (!PlayerLib.isInsideBlock()) {
-                            mc.thePlayer.swingItem();
-                            this.placeBlock();
-                        }
-                    } else if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getStackInSlot(selectedSlot), rayrace.getBlockPos(), rayrace.sideHit, rayrace.hitVec)) {
+                    if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getStackInSlot(selectedSlot), rayrace.getBlockPos(), rayrace.sideHit, rayrace.hitVec)) {
                         mc.thePlayer.swingItem();
                     }
-                    if (Configs.placemaxdelay != 0) {
-                        if (!this.flag) {
-                            this.ticks = (int) ((Configs.placemindelay) + new Random().nextInt((int) ((Configs.placemaxdelay) - (Configs.placemindelay) + 1.0)));
-                        } else {
-                            this.ticks = (int) Math.max(2, (Configs.placemindelay) + new Random().nextInt((int) ((Configs.placemaxdelay) - (Configs.placemindelay) + 1.0)));
-                        }
-                    }
+
+                    if (Configs.placemaxdelay != 0) this.ticks = (int) ((Configs.placemindelay) + new Random().nextInt((int) ((Configs.placemaxdelay) - (Configs.placemindelay) + 1.0)));
 
                     if (mc.thePlayer.inventory.getStackInSlot(selectedSlot) != null && mc.thePlayer.inventory.getStackInSlot(selectedSlot).stackSize <= 0) {
                         mc.thePlayer.inventory.removeStackFromSlot(selectedSlot);
@@ -144,22 +119,25 @@ public class Scaffold {
     @SubscribeEvent
     public void onMove(final MoveEvent event) {
         // holy shit wtf switch statements exist
-        if (Configs.scaffold && Configs.scafsprintmode != 0 && inGame()) {
-            if (Configs.scafsprintmode != 1 && Configs.scafsprintmode != 4) mc.thePlayer.setSprinting(false);
-            if (Configs.scafsprintmode == 3) return;
-            double speed = 0.2575;
-            if (Configs.scafsprintmode == 1)  speed *= Configs.semisprintspeed;
-            if (Configs.scafsprintmode == 4) speed *= 0.30; // number from my ass
-            if (Configs.scafsprintmode == 5) speed *= 0.65; // ^^^^
+        //if ((Configs.scafsprintmode != 4 && Configs.scafsprintmode != 5) || !mc.gameSettings.keyBindJump.isKeyDown()) {
+            if (Configs.scaffold && Configs.scafsprintmode != 0 && inGame()) {
+                if (Configs.scafsprintmode != 1 && Configs.scafsprintmode != 4) mc.thePlayer.setSprinting(false);
+                if (Configs.scafsprintmode == 3) return;
+                double speed = 0.2575;
+                if (Configs.scafsprintmode == 1) speed *= Configs.semisprintspeed;
+                if (Configs.scafsprintmode == 4) speed *= 0.30; // number from my ass
+                if (Configs.scafsprintmode == 5) speed *= 0.65; // ^^^^
 
-            MovementLib.setMotion(speed, Configs.scaffoldJumpSprint, Configs.scaffoldJumpSpeed);
-        }
+                MovementLib.setMotion(speed, Configs.scaffoldJumpSprint, Configs.scaffoldJumpSpeed);
+            }
+        //}
     }
 
     private BlockPos getClosestBlock() {
         final ArrayList<Vec3> posList = new ArrayList<Vec3>();
-        for (int range = (int) Configs.scaffolddist, x = -range; x <= range; x++) {
-            for (int y = -5; y < -2; y++) {
+        int range = (int) Configs.scaffolddist;
+        for (int x = -range; x <= range; x++) {
+            for (int y = -3; y < -2; y++) {
                 for (int z = -range; z <= range; z++) {
                     final Vec3 vec = new Vec3(x, y, z).addVector(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ);
                     final BlockPos pos2 = new BlockPos(vec);
@@ -173,7 +151,7 @@ public class Scaffold {
             return null;
         }
 
-        posList.sort(Comparator.comparingDouble(pos -> mc.thePlayer.getDistance(pos.xCoord, pos.yCoord + 1.0, pos.zCoord)));
+        posList.sort(Comparator.comparingDouble(pos -> mc.thePlayer.getDistance(pos.xCoord, pos.yCoord, pos.zCoord)));
         return new BlockPos((Vec3)posList.get(0));
     }
 

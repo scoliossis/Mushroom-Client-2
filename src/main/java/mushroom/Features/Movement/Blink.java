@@ -1,7 +1,6 @@
 package mushroom.Features.Movement;
 
 import mushroom.GUI.Configs;
-import mushroom.Libs.ChatLib;
 import mushroom.Libs.PacketUtils;
 import mushroom.Libs.TickTimer;
 import mushroom.Libs.events.PacketSentEvent;
@@ -9,6 +8,7 @@ import mushroom.Libs.events.PlayerUpdateEvent;
 import mushroom.Libs.events.WorldJoinEvent;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import net.minecraft.network.Packet;
@@ -22,16 +22,20 @@ public class Blink {
 
     @SubscribeEvent
     public void onDisconnect(final FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
-        this.packets.clear();
-        Configs.blink = false;
+        if (Configs.blink) {
+            this.packets.clear();
+            Configs.blink = false;
+        }
     }
 
     @SubscribeEvent
-    public void onUpdate(final PlayerUpdateEvent event) {
-        timer.updateTicks();
-        if (timer.passed((int) Configs.pulseticks) && Configs.pulse) {
-            sendPackets();
-            timer.reset();
+    public void onUpdate(PlayerUpdateEvent event) {
+        if (Configs.blink && Configs.pulse) {
+            timer.updateTicks();
+            if (timer.passed((int) Configs.pulseticks) && Configs.pulse) {
+                sendPackets();
+                timer.reset();
+            }
         }
     }
 

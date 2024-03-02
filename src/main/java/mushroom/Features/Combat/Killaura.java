@@ -82,7 +82,7 @@ public class Killaura {
             }
             switch (Configs.killauramode) {
                 case 0: {
-                    return (EntityLivingBase)validTargets.get(this.targetIndex);
+                    return (EntityLivingBase)validTargets.get(targetIndex);
                 }
                 case 1: {
                     return (EntityLivingBase)validTargets.get(0);
@@ -106,7 +106,7 @@ public class Killaura {
                 attacks = 0;
             }
             else {
-                if (Configs.autoblockmode == 4 && isBlocking) stopBlocking();
+                if (isBlocking) stopBlocking();
 
                 target = null;
                 isBlocking = false;
@@ -115,6 +115,7 @@ public class Killaura {
         killauraon = Configs.killaura;
     }
 
+    long stoppedTime = System.currentTimeMillis();
 
     long lastSwung = 0;
     long unblockTime = 0;
@@ -160,8 +161,7 @@ public class Killaura {
         if (target != null) {
 
             final Rotations angles;
-            if (Configs.backtrack && target == BackTrack.entitytoattack && BackTrack.positionarray.size() >= 2 && target.getDistanceToEntity(mc.thePlayer) > PlayerLib.distanceToPlayer(BackTrack.positionarray.get(0), BackTrack.positionarray.get(1), BackTrack.positionarray.get(2))) angles = RotationUtils.getRotations(BackTrack.positionarray.get(0), BackTrack.positionarray.get(1)+1.75, BackTrack.positionarray.get(2), 2.0f);
-            else angles = RotationUtils.getRotations(target, 0.2f);
+            angles = RotationUtils.getRotations(target, 0.2f);
             switch (Configs.killaurarotmod) {
                 case 0:
                     event.setRotation(RotationUtils.getSmoothRotation(RotationUtils.getLastReportedRotation(), angles, Configs.smoothspeed));
@@ -180,10 +180,10 @@ public class Killaura {
         }
 
         if (Configs.mousedown && !mc.gameSettings.keyBindAttack.isKeyDown()) {
-            this.attacks = 0;
+            attacks = 0;
             return;
         }
-        if (target != null && (mc.thePlayer.getDistanceToEntity(target) < Math.max(Configs.rotationrange, Configs.aurareach) || (Configs.backtrack && target.getDistanceToEntity(mc.thePlayer) < (float) Configs.backtrackreach && target == BackTrack.entitytoattack )) && this.attacks > 0) {
+        if (target != null && (mc.thePlayer.getDistanceToEntity(target) < Math.max(Configs.rotationrange, Configs.aurareach)) && attacks > 0) {
             if (Configs.autoblockmode == 2) {
                 stopBlocking();
             }
@@ -191,8 +191,7 @@ public class Killaura {
 
                 if (Configs.killaurarotmod == 2) {
                     final Rotations angles;
-                    if (Configs.backtrack && target == BackTrack.entitytoattack && BackTrack.positionarray.size() >= 2 && target.getDistanceToEntity(mc.thePlayer) > PlayerLib.distanceToPlayer(BackTrack.positionarray.get(0), BackTrack.positionarray.get(1), BackTrack.positionarray.get(2))) angles = RotationUtils.getRotations(BackTrack.positionarray.get(0), BackTrack.positionarray.get(1)+1.75, BackTrack.positionarray.get(2), 2.0f);
-                    else angles = RotationUtils.getRotations(target, 0.2f);
+                    angles = RotationUtils.getRotations(target, 0.2f);
 
                     event.setRotation(RotationUtils.getLimitedRotation(RotationUtils.getLastReportedRotation(), angles, 360));
 
@@ -213,16 +212,16 @@ public class Killaura {
 
                     mc.thePlayer.swingItem();
 
-                    if (mc.thePlayer.getDistanceToEntity(target) < ((float) Configs.aurareach) || (Configs.backtrack && target.getDistanceToEntity(mc.thePlayer) < (float) Configs.backtrackreach && target == BackTrack.entitytoattack)) {
-                        if ((RotationUtils.getRotationDifference(RotationUtils.getRotations(target), RotationUtils.getLastReportedRotation()) < Configs.auraaccuracy) || (Configs.backtrack && BackTrack.positionarray.size() >= 2 && target == BackTrack.entitytoattack && RotationUtils.getRotationDifference(RotationUtils.getRotations(BackTrack.positionarray.get(0), BackTrack.positionarray.get(1) + 1.75, BackTrack.positionarray.get(2)), RotationUtils.getLastReportedRotation()) < Configs.auraaccuracy)) {
+                    if (mc.thePlayer.getDistanceToEntity(target) < ((float) Configs.aurareach)) {
+                        if ((RotationUtils.getRotationDifference(RotationUtils.getRotations(target), RotationUtils.getLastReportedRotation()) < Configs.auraaccuracy)) {
                             mc.playerController.attackEntity(mc.thePlayer, target);
-                            if (this.switchDelayTimer.hasTimePassed((long) Configs.switchdelay)) {
-                                ++this.targetIndex;
-                                this.switchDelayTimer.reset();
+                            if (switchDelayTimer.hasTimePassed((long) Configs.switchdelay)) {
+                                ++targetIndex;
+                                switchDelayTimer.reset();
                             }
                         }
                     }
-                    --this.attacks;
+                    --attacks;
 
 
                     event.setPitch(MathLib.clamp(pitch, 90.0f, -90.0f));
@@ -237,23 +236,29 @@ public class Killaura {
                 else {
                     if ((Configs.autoblockmode != 4 || (!isBlocking && System.currentTimeMillis() - unblockTime > Configs.swingCooldown))) {
 
+                        if (Configs.autoblockmode == 5 || Configs.autoblockmode == 6 || Configs.autoblockmode == 7) {
+                            stopBlocking();
+                            stoppedTime = System.currentTimeMillis();
+                            isBlocking = false;
+                        }
+
                         mc.thePlayer.swingItem();
 
                         if (Configs.autoblockmode == 4 && mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) {
                             lastSwung = System.currentTimeMillis();
                         }
 
-                        if (mc.thePlayer.getDistanceToEntity(target) < (Configs.aurareach) || (Configs.backtrack && target.getDistanceToEntity(mc.thePlayer) < Configs.backtrackreach && target == BackTrack.entitytoattack)) {
-                            if ((RotationUtils.getRotationDifference(RotationUtils.getRotations(target), RotationUtils.getLastReportedRotation()) < Configs.auraaccuracy) || (Configs.backtrack && BackTrack.positionarray.size() >= 2 && target == BackTrack.entitytoattack && RotationUtils.getRotationDifference(RotationUtils.getRotations(BackTrack.positionarray.get(0), BackTrack.positionarray.get(1) + 1.75, BackTrack.positionarray.get(2)), RotationUtils.getLastReportedRotation()) < Configs.auraaccuracy)) {
+                        if (mc.thePlayer.getDistanceToEntity(target) < (Configs.aurareach)) {
+                            if ((RotationUtils.getRotationDifference(RotationUtils.getRotations(target), RotationUtils.getLastReportedRotation()) < Configs.auraaccuracy)) {
                                 mc.playerController.attackEntity(mc.thePlayer, target);
-                                if (this.switchDelayTimer.hasTimePassed((long) Configs.switchdelay)) {
-                                    ++this.targetIndex;
-                                    this.switchDelayTimer.reset();
+                                if (switchDelayTimer.hasTimePassed((long) Configs.switchdelay)) {
+                                    ++targetIndex;
+                                    switchDelayTimer.reset();
                                 }
                             }
                         }
                     }
-                    --this.attacks;
+                    --attacks;
 
                 }
             }
@@ -261,17 +266,17 @@ public class Killaura {
                 switch (Configs.autoblockmode) {
                     case 2: {
                         if (isBlocking) {
-                            this.startBlocking();
+                            startBlocking();
                             break;
                         }
                         break;
                     }
                     case 3: {
-                        if (this.blockDelay.hasTimePassed(250L)) {
-                            this.startBlocking();
+                        if (blockDelay.hasTimePassed(250L)) {
+                            startBlocking();
                             mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING));
                             mc.thePlayer.sendQueue.addToSendQueue(new C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING));
-                            this.blockDelay.reset();
+                            blockDelay.reset();
                             break;
                         }
                         break;
@@ -285,7 +290,37 @@ public class Killaura {
 
         }
         else {
-            this.attacks = 0;
+            attacks = 0;
+        }
+    }
+
+    @SubscribeEvent // AHHH POST SCARY
+    public void onMovePOST(MotionUpdateEvent.Post event) {
+        if (Configs.killaura && Configs.autoblockmode == 5 && target != null) {
+            if (!isBlocking) {
+                isBlocking = true;
+                startBlocking();
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onMoveMix(MotionUpdateEvent event) {
+        if (Configs.killaura && Configs.autoblockmode == 6 && target != null) {
+            if (!isBlocking) {
+                isBlocking = true;
+                startBlocking();
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onMovePr(MotionUpdateEvent.Pre event) {
+        if (Configs.killaura && Configs.autoblockmode == 7 && target != null) {
+            if (!isBlocking && System.currentTimeMillis() - stoppedTime > Configs.reblockDelay) {
+                isBlocking = true;
+                startBlocking();
+            }
         }
     }
 
@@ -298,22 +333,22 @@ public class Killaura {
 
     @SubscribeEvent
     public void onRender(final RenderWorldLastEvent event) {
-        if (Configs.killaura && target != null && this.lastAttack.hasTimePassed(1000 / nextCps) && (mc.thePlayer.getDistanceToEntity(target) < (Configs.swingonrot ? ((float) Configs.rotationrange) : ((float) Configs.aurareach)) || (Configs.backtrack && target.getDistanceToEntity(mc.thePlayer) < (float) Configs.backtrackreach && target == BackTrack.entitytoattack ))) {
-            this.nextCps = (int)((Configs.averagecps-3) + Math.abs((Configs.averagecps+3) - (Configs.averagecps-3)) * new Random().nextFloat());
-            this.lastAttack.reset();
-            ++this.attacks;
+        if (Configs.killaura && target != null && lastAttack.hasTimePassed(1000 / nextCps) && (mc.thePlayer.getDistanceToEntity(target) < (Configs.swingonrot ? ((float) Configs.rotationrange) : ((float) Configs.aurareach)))) {
+            nextCps = (int)((Configs.averagecps-3) + Math.abs((Configs.averagecps+3) - (Configs.averagecps-3)) * new Random().nextFloat());
+            lastAttack.reset();
+            attacks++;
         }
     }
 
     private void startBlocking() {
         PacketUtils.sendPacketNoEvent(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
-        this.isBlocking = true;
+        isBlocking = true;
     }
 
     private void stopBlocking() {
-        if (this.isBlocking) {
+        if (isBlocking) {
             mc.getNetHandler().getNetworkManager().sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-            this.isBlocking = false;
+            isBlocking = false;
         }
     }
 
