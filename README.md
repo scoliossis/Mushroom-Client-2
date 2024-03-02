@@ -6,10 +6,10 @@
 #### or hf configing this yourself (i made the configing process too hard)
 
 ### heck yeah clickgui, custom colors the built in colors are ugly
-![clickgui](https://imgur.com/C2QoCqg)
+![mainmenu](https://i.imgur.com/1RVRB1l.png)
 
 ### theres like 5 different gifs for the main menu
-![mainmenu](https://i.imgur.com/1RVRB1l.png)
+![clickgui](https://imgur.com/C2QoCqg.png)
 
 ### no microsoft account switcher, use essentials or smth :(
 ![altmanager](https://i.imgur.com/kHpA4HU.png)
