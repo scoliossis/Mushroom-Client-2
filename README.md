@@ -6,7 +6,7 @@
 #### or hf configing this yourself (i made the configing process too hard)
 
 ### heck yeah clickgui, custom colors the built in colors are ugly
-![clickgui](https://i.imgur.com/oqEiuZQ.png)
+![clickgui](https://imgur.com/C2QoCqg)
 
 ### theres like 5 different gifs for the main menu
 ![mainmenu](https://i.imgur.com/1RVRB1l.png)
