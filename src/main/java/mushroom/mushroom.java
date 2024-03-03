@@ -197,6 +197,8 @@ public class mushroom extends CommandBase {
         MinecraftForge.EVENT_BUS.register(new AutoTool());
         MinecraftForge.EVENT_BUS.register(new BedESP());
         MinecraftForge.EVENT_BUS.register(new Criticals());
+        MinecraftForge.EVENT_BUS.register(new HUD());
+        MinecraftForge.EVENT_BUS.register(new ScoreBoard());
 
         if (Files.exists(Paths.get(sillyfolderpath + "/accounts/sessionids.cfg"))) {
             validsessions = ReadFile(sillyfolderpath + "/accounts/sessionids.cfg");

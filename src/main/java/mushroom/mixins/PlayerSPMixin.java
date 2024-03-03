@@ -31,8 +31,6 @@ import static mushroom.Libs.PlayerLib.mc;
 
 @Mixin(value = { EntityPlayerSP.class }, priority = 1)
 public class PlayerSPMixin {
-
-
     private boolean serverSprintState;
     private boolean serverSneakState;
     private float lastReportedPitch;
@@ -52,7 +50,7 @@ public class PlayerSPMixin {
     @Inject(method = { "onLivingUpdate" }, at = { @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;onLivingUpdate()V") }, cancellable = true)
     public void onLivingUpdate(final CallbackInfo ci) {
 
-        if (((Configs.sprint && (Configs.sprintmode == 1 || Configs.sprintmode == 2)) || (Configs.scaffold && Configs.scafsprintmode == 4)) && !(Configs.scaffold && Configs.scafsprintmode == 5)) {
+        if (((Configs.sprint && (Configs.sprintmode == 1 || Configs.sprintmode == 2)) || (Configs.scaffold && Configs.scafsprintmode == 4)) && !(Configs.scaffold && Configs.scafsprintmode == 5) && !mc.thePlayer.isUsingItem()) {
             if (!MovementLib.isMoving() || mc.thePlayer.isSneaking() || (mc.thePlayer.getFoodStats().getFoodLevel() <= 6.0f && !mc.thePlayer.capabilities.allowFlying)) {
                 if (mc.thePlayer.isSprinting()) {
                     mc.thePlayer.setSprinting(false);
@@ -60,7 +58,6 @@ public class PlayerSPMixin {
             }
 
             else if (!mc.thePlayer.isSprinting()) {
-                // causes you to move forward when jumping.
                 mc.thePlayer.setSprinting(true);
             }
 

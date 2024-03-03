@@ -52,6 +52,10 @@ public class EntityMixin {
 
 
 
+    /**
+     * @author h
+     * @reason h
+     */
     @Overwrite
     public void moveFlying(float strafe, float forward, float friction) {
         final MoveFlyingEvent event = new MoveFlyingEvent(forward, strafe, friction, this.rotationYaw);
@@ -83,6 +87,10 @@ public class EntityMixin {
     }
 
 
+    /**
+     * @author n
+     * @reason n
+     */
     @Overwrite
     public boolean isSprinting() {
         return this.getFlag(3);

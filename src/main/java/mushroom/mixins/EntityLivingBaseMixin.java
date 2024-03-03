@@ -91,6 +91,7 @@ public class EntityLivingBaseMixin extends EntityMixin {
     // fixes moving forward when jumping with omnisprint
     @Overwrite
     protected void jump() {
+        if (Configs.scaffold && Configs.tower) return;
         this.motionY = this.getJumpUpwardsMotion();
         if (this.isPotionActive(Potion.jump)) {
             this.motionY += ((float)(this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F);
