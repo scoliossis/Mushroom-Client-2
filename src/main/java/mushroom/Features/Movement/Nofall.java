@@ -1,5 +1,6 @@
 package mushroom.Features.Movement;
 
+import mushroom.Features.Visual.Notifications;
 import mushroom.GUI.Configs;
 import mushroom.Libs.ChatLib;
 import mushroom.Libs.PacketUtils;
@@ -28,11 +29,9 @@ public class Nofall {
             if (!PlayerLib.isOverVoid()) {
                 switch(Configs.nofallmode){
                     case 1:
-                        if (mc.thePlayer.fallDistance > Configs.nofallheight) {
-                            event.setOnGround(true);
-                        }
+                        event.setOnGround(true);
                     case 2:
-                        if (mc.thePlayer.fallDistance > Configs.nofallheight) {
+                        if (mc.thePlayer.fallDistance >= Configs.nofallheight) {
                             mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer(true));
                             mc.thePlayer.fallDistance = 0;
                         }
@@ -41,40 +40,60 @@ public class Nofall {
         }
     }
 
-    int minus = 0;
-    private static final Queue<C03PacketPlayer> packetQueue = new ConcurrentLinkedQueue<>();
+    public static boolean noFallBlinking = false;
+    boolean gogogo = false;
+    int ticks = 0;
+
+    private static final Queue<Packet> packetQueue = new ConcurrentLinkedQueue<>();
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPacket(PacketSentEvent event) {
-        // mode blink
-        if (Configs.nofall && event.packet instanceof C03PacketPlayer) {
-
-            if (Configs.nofallmode == 3) {
-                if (mc.thePlayer.fallDistance > (float) Configs.nofallheight / 10) {
-                    if (mc.thePlayer.ticksExisted % 2 == 0) ((C03Accessor)event.packet).setOnGround(true);
+        if (Configs.nofall && PlayerLib.inGame()) {
+            // scaffold + nofall = BAN!
+            if (Configs.nofallmode == 3 && !Configs.scaffold) {
+                if (mc.thePlayer.onGround && PlayerLib.isOverAir() && !noFallBlinking && mc.thePlayer.motionY <= 0) {
+                    Notifications.popupmessage("No Fall", "blinking");
+                    noFallBlinking = true;
+                }
+                if (noFallBlinking) {
                     event.setCanceled(true);
+                    if (event.packet instanceof C03PacketPlayer) ((C03Accessor)event.packet).setOnGround(true);
+                    packetQueue.offer(event.packet);
 
-                    packetQueue.offer((C03PacketPlayer) event.packet);
-
-                    if (mc.thePlayer.onGround) {
-                        packetQueue.clear();
+                    if ((((mc.thePlayer.onGround && mc.thePlayer.fallDistance > 0 && packetQueue.size() > 5)) || !PlayerLib.isOverAir() || PlayerLib.isOverVoid())) {
                         mc.thePlayer.fallDistance = 0.0f;
+                        gogogo = true;
                     }
-                } else {
-                    while (!packetQueue.isEmpty()) {
-                        PacketUtils.sendPacketNoEvent(packetQueue.poll());
+                }
+                if ((gogogo && noFallBlinking) || mc.thePlayer.motionY > 0) {
+                    ticks++;
+
+                    if (ticks > 10 || mc.thePlayer.motionY > 0) {
+                        ticks = 0;
+                        while (!packetQueue.isEmpty()) {
+                            PacketUtils.sendPacketNoEvent(packetQueue.poll());
+                        }
+                        gogogo = false;
+                        if (noFallBlinking) {
+                            noFallBlinking = false;
+                            Notifications.popupmessage("No Fall", "landed");
+                            if (Configs.autoDisableNoFall) Configs.nofall = false;
+                        }
                     }
-                    minus = 0;
                 }
             }
             else if (Configs.nofallmode == 0) {
                 ((C03Accessor)event.packet).setOnGround(false);
             }
+            else if (Configs.nofallmode == 5 && event.packet instanceof C03PacketPlayer) {
+                ((C03Accessor)event.packet).setOnGround(false);
+                ((C03Accessor) event.packet).setY(((C03PacketPlayer) event.packet).getPositionY()+0.01d);
+            }
         }
     }
 
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPack(PacketSentEvent.Post event) {
         if (Configs.nofall && event.packet instanceof C03PacketPlayer) {
             if (Configs.nofallmode == 4) {

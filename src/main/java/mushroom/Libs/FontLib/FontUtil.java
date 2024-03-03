@@ -26,6 +26,7 @@ public class FontUtil {
     public static MinecraftFontRenderer comicsans23;
     public static MinecraftFontRenderer comicsans35;
     public static MinecraftFontRenderer comicsans46;
+    public static MinecraftFontRenderer tahomaBold;
 
 
     private static Font productsansfont19;
@@ -38,6 +39,7 @@ public class FontUtil {
     private static Font comicsansfont35;
     private static Font comicsansfont46;
 
+    private static Font tahomaBoldFont;
 
     private static Font getFont(Map<String, Font> locationMap, String location, int size) {
         Font font = null;
@@ -77,6 +79,7 @@ public class FontUtil {
             comicsansfont23 = getFont(locationMap, "comicsans.ttf", 23);
             comicsansfont35 = getFont(locationMap, "comicsans.ttf", 35);
             comicsansfont46 = getFont(locationMap, "comicsans.ttf", 46);
+            tahomaBoldFont = getFont(locationMap, "TahomaB.ttf", 40);
 
             completed++;
         }).start();
@@ -108,7 +111,6 @@ public class FontUtil {
         comicsans23 = new MinecraftFontRenderer(comicsansfont23, true, true);
         comicsans35 = new MinecraftFontRenderer(comicsansfont35, true, true);
         comicsans46 = new MinecraftFontRenderer(comicsansfont46, true, true);
-
-
+        tahomaBold = new MinecraftFontRenderer(tahomaBoldFont, true, true);
     }
 }

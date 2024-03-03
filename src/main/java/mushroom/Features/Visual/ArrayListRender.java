@@ -12,8 +12,6 @@ import mushroom.Libs.RenderLib;
 import mushroom.mushroom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -36,7 +34,7 @@ public class ArrayListRender {
             Iterator allsettings = mushroom.settings.iterator();
             while (allsettings.hasNext()) {
                 Setting setting = (Setting) allsettings.next();
-                if (setting.parent != null && setting.parent.parent == null && setting instanceof BooleanSetting && (Boolean) setting.get(Boolean.class)) {
+                if (setting.parent != null && setting.parent.parent == null && setting instanceof BooleanSetting && (Boolean) setting.get(Boolean.class) && (!Objects.equals(setting.parent.name, "Visual") || Configs.showVisuals)) {
                     Iterator allsettings2 = setting.getSons().iterator();
                     String mode = "";
                     if (Configs.showmode) {
@@ -74,12 +72,14 @@ public class ArrayListRender {
                     Color[] colorOfText = RenderLib.getColorsFade(2 + (10 * i), 10, Configs.arrayfadecentre, colors[0], colors[1], 0.05 * Configs.arraylistspeed);
 
                     if (Configs.arraylistpos == 0) {
+                        if (Configs.showBackgrounds)
                         drawGradientRect(0,1, 1 + (10*i), (int) (2 + FontUtil.productsans19.getStringWidth(EachSettingSplit[p])+3), 1 + (10 * i) + 10, new Color(23,23,23,100).getRGB(), new Color(23,23,23,100).getRGB());
                         if (Configs.sideline == 1) drawGradientRect(0, 0, 2 + (10 * i), 1, 1 + (10 * i) + 8, colorOfText[0].getRGB(), colorOfText[1].getRGB());
                         else if (Configs.sideline == 2) drawGradientRect(0, 0, 1 + (10 * i), 1, 1 + (10 * i) + 10, colorOfText[0].getRGB(), colorOfText[1].getRGB());
 
                         FontUtil.productsans19.drawStringWithShadow(EachSettingSplit[p], 2, 1 + (10 * i)+1, colorOfText[0].getRGB());
                     } else if (Configs.arraylistpos == 1) {
+                        if (Configs.showBackgrounds)
                         drawGradientRect(0, (int) ((s.getScaledWidth()) - FontUtil.productsans19.getStringWidth(EachSettingSplit[p]) - 4), 1 + (10 * i), s.getScaledWidth(), 1 + (10 * i) + 10, new Color(23,23,23,100).getRGB(), new Color(23,23,23,100).getRGB());
                         if (Configs.sideline == 1) drawGradientRect(0, s.getScaledWidth() - 1, 2 + (10 * i), s.getScaledWidth(), 1 + (10 * i) + 8, colorOfText[0].getRGB(), colorOfText[1].getRGB());
                         else if (Configs.sideline == 2) drawGradientRect(0, s.getScaledWidth() - 1, 1 + (10 * i), s.getScaledWidth(), 1 + (10 * i) + 10, colorOfText[0].getRGB(), colorOfText[1].getRGB());
@@ -97,7 +97,7 @@ public class ArrayListRender {
                             }
                         }
 
-                        FontUtil.productsans19.drawString(EachSettingSplit[p], ((double) s.getScaledWidth()) - FontUtil.productsans19.getStringWidth(EachSettingSplit[p]) - 3, 1 + (10 * i)+1, colorOfText[0].getRGB());
+                        FontUtil.productsans19.drawStringWithShadow(EachSettingSplit[p], ((double) s.getScaledWidth()) - FontUtil.productsans19.getStringWidth(EachSettingSplit[p]) - 3, 1 + (10 * i)+1, colorOfText[0].getRGB());
                     }
                     i++;
                 }

@@ -18,6 +18,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Matrix4f;
 
 import javax.vecmath.Vector2f;
@@ -77,14 +78,15 @@ public class RenderLib {
         }
     }
 
-    public static void outlineESP(final RenderLayersEvent event, final Color color) {
+    public static void outlineESP(final RenderLayersEvent event, Color color) {
         final boolean fancyGraphics = mc.gameSettings.fancyGraphics;
         final float gamma = mc.gameSettings.gammaSetting;
         mc.gameSettings.fancyGraphics = false;
         mc.gameSettings.gammaSetting = 100000.0f;
         GlStateManager.resetColor();
 
-        GL11.glColor4d((double)(color.getRed() / 255.0f), (double)(color.getGreen() / 255.0f), (double)(color.getBlue() / 255.0f), (double)(color.getAlpha() / 255.0f));
+        RenderLib.colorGL(color.getRGB());
+        //GL11.glColor4d((double)(color.getRed() / 255.0f), (double)(color.getGreen() / 255.0f), (double)(color.getBlue() / 255.0f), (double)(color.getAlpha() / 255.0f));
 
         final Framebuffer fbo = mc.getFramebuffer();
         if (fbo != null && fbo.depthBuffer > -1) {
@@ -125,7 +127,8 @@ public class RenderLib {
 
         event.modelBase.render((Entity)event.entity, two, three, foor, five, six, scale);
 
-        GL11.glColor4d((double)(color.getRed() / 255.0f), (double)(color.getGreen() / 255.0f), (double)(color.getBlue() / 255.0f), (double)(color.getAlpha() / 255.0f));
+        //GL11.glColor4d((double)(color.getRed() / 255.0f), (double)(color.getGreen() / 255.0f), (double)(color.getBlue() / 255.0f), (double)(color.getAlpha() / 255.0f));
+        RenderLib.colorGL(color.getRGB());
 
         GL11.glStencilFunc(512, 0, 15);
         GL11.glStencilOp(7681, 7681, 7681);
@@ -133,7 +136,8 @@ public class RenderLib {
 
         event.modelBase.render((Entity)event.entity, two, three, foor, five, six, scale);
 
-        GL11.glColor4d((double)(color.getRed() / 255.0f), (double)(color.getGreen() / 255.0f), (double)(color.getBlue() / 255.0f), (double)(color.getAlpha() / 255.0f));
+        //GL11.glColor4d((double)(color.getRed() / 255.0f), (double)(color.getGreen() / 255.0f), (double)(color.getBlue() / 255.0f), (double)(color.getAlpha() / 255.0f));
+        RenderLib.colorGL(color.getRGB());
 
         GL11.glStencilFunc(514, 1, 15);
         GL11.glStencilOp(7680, 7680, 7680);
@@ -142,7 +146,8 @@ public class RenderLib {
         event.modelBase.render((Entity)event.entity, two, three, foor, five, six, scale);
 
 
-        GL11.glColor4d((double)(color.getRed() / 255.0f), (double)(color.getGreen() / 255.0f), (double)(color.getBlue() / 255.0f), (double)(color.getAlpha() / 255.0f));
+        //GL11.glColor4d((double)(color.getRed() / 255.0f), (double)(color.getGreen() / 255.0f), (double)(color.getBlue() / 255.0f), (double)(color.getAlpha() / 255.0f));
+        RenderLib.colorGL(color.getRGB());
 
         GL11.glColor4d((double)(color.getRed() / 255.0f), (double)(color.getGreen() / 255.0f), (double)(color.getBlue() / 255.0f), (double)(color.getAlpha() / 255.0f));
         GL11.glDepthMask(false);
@@ -153,7 +158,8 @@ public class RenderLib {
 
         event.modelBase.render((Entity)event.entity, two, three, foor, five, six, scale);
 
-        GL11.glColor4d((double)(color.getRed() / 255.0f), (double)(color.getGreen() / 255.0f), (double)(color.getBlue() / 255.0f), (double)(color.getAlpha() / 255.0f));
+        //GL11.glColor4d((double)(color.getRed() / 255.0f), (double)(color.getGreen() / 255.0f), (double)(color.getBlue() / 255.0f), (double)(color.getAlpha() / 255.0f));
+        RenderLib.colorGL(color.getRGB());
 
         GL11.glPolygonOffset(1.0f, 2000000.0f);
         GL11.glDisable(10754);
@@ -168,10 +174,96 @@ public class RenderLib {
         GL11.glEnable(3008);
         GL11.glPopAttrib();
 
-        GL11.glColor4d(0, 0, 0, 255);
+        //GL11.glColor4d(0, 0, 0, 255);
+        RenderLib.colorGL(color.getRGB());
 
         mc.gameSettings.fancyGraphics = fancyGraphics;
         mc.gameSettings.gammaSetting = gamma;
+    }
+
+    public static void drawTexturedRectNoBlend(final float x, final float y, final float width, final float height, final float uMin, final float uMax, final float vMin, final float vMax, final int filter) {
+        GlStateManager.enableTexture2D();
+        GL11.glTexParameteri(3553, 10241, filter);
+        GL11.glTexParameteri(3553, 10240, filter);
+        final Tessellator tessellator = Tessellator.getInstance();
+        final WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        worldrenderer.pos(x, (y + height), 0.0).tex(uMin, vMax).endVertex();
+        worldrenderer.pos((x + width), (y + height), 0.0).tex(uMax, vMax).endVertex();
+        worldrenderer.pos((x + width), y, 0.0).tex(uMax, vMin).endVertex();
+        worldrenderer.pos(x, y, 0.0).tex(uMin, vMin).endVertex();
+        tessellator.draw();
+        GL11.glTexParameteri(3553, 10241, 9728);
+        GL11.glTexParameteri(3553, 10240, 9728);
+    }
+
+
+    public static void drawTexturedRect(final float x, final float y, final float width, final float height, final float uMin, final float uMax, final float vMin, final float vMax, final int filter) {
+        GlStateManager.enableBlend();
+        GL14.glBlendFuncSeparate(770, 771, 1, 771);
+        drawTexturedRectNoBlend(x, y, width, height, uMin, uMax, vMin, vMax, filter);
+        GlStateManager.disableBlend();
+    }
+
+    public static void drawGradientOutlinedRoundedRect(float x, float y, final float width, final float height, final float radius, final float linewidth, final int color1, final int color2, final int color3, final int color4) {
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        double x2 = x + width;
+        double y2 = y + height;
+        final float opacity1 = (color1 >> 24 & 0xFF) / 255.0f;
+        final float red1 = (color1 >> 16 & 0xFF) / 255.0f;
+        final float green1 = (color1 >> 8 & 0xFF) / 255.0f;
+        final float blue1 = (color1 & 0xFF) / 255.0f;
+        final float opacity2 = (color2 >> 24 & 0xFF) / 255.0f;
+        final float red2 = (color2 >> 16 & 0xFF) / 255.0f;
+        final float green2 = (color2 >> 8 & 0xFF) / 255.0f;
+        final float blue2 = (color2 & 0xFF) / 255.0f;
+        final float opacity3 = (color3 >> 24 & 0xFF) / 255.0f;
+        final float red3 = (color3 >> 16 & 0xFF) / 255.0f;
+        final float green3 = (color3 >> 8 & 0xFF) / 255.0f;
+        final float blue3 = (color3 & 0xFF) / 255.0f;
+        final float opacity4 = (color4 >> 24 & 0xFF) / 255.0f;
+        final float red4 = (color4 >> 16 & 0xFF) / 255.0f;
+        final float green4 = (color4 >> 8 & 0xFF) / 255.0f;
+        final float blue4 = (color4 & 0xFF) / 255.0f;
+        GL11.glPushAttrib(0);
+        GL11.glScaled(0.5, 0.5, 0.5);
+        x *= 2.0f;
+        y *= 2.0f;
+        x2 *= 2.0;
+        y2 *= 2.0;
+        GL11.glLineWidth(linewidth);
+        GL11.glDisable(3553);
+        GL11.glEnable(2848);
+        GL11.glShadeModel(7425);
+        GL11.glBegin(2);
+        GL11.glColor4f(red1, green1, blue1, opacity1);
+        for (int i = 0; i <= 90; i += 3) {
+            GL11.glVertex2d(x + radius + Math.sin(i * 3.141592653589793 / 180.0) * (radius * -1.0f), y + radius + Math.cos(i * 3.141592653589793 / 180.0) * (radius * -1.0f));
+        }
+        GL11.glColor4f(red2, green2, blue2, opacity2);
+        for (int i = 90; i <= 180; i += 3) {
+            GL11.glVertex2d(x + radius + Math.sin(i * 3.141592653589793 / 180.0) * (radius * -1.0f), y2 - radius + Math.cos(i * 3.141592653589793 / 180.0) * (radius * -1.0f));
+        }
+        GL11.glColor4f(red3, green3, blue3, opacity3);
+        for (int i = 0; i <= 90; i += 3) {
+            GL11.glVertex2d(x2 - radius + Math.sin(i * 3.141592653589793 / 180.0) * radius, y2 - radius + Math.cos(i * 3.141592653589793 / 180.0) * radius);
+        }
+        GL11.glColor4f(red4, green4, blue4, opacity4);
+        for (int i = 90; i <= 180; i += 3) {
+            GL11.glVertex2d(x2 - radius + Math.sin(i * 3.141592653589793 / 180.0) * radius, y + radius + Math.cos(i * 3.141592653589793 / 180.0) * radius);
+        }
+        GL11.glEnd();
+        GL11.glEnable(3553);
+        GL11.glDisable(2848);
+        GL11.glEnable(3553);
+        GL11.glShadeModel(7424);
+        GL11.glScaled(2.0, 2.0, 2.0);
+        GL11.glPopAttrib();
+        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
     }
 
     public static Matrix4f getMatrix(final int matrix) {
@@ -252,6 +344,17 @@ public class RenderLib {
         GL11.glMatrixMode(5888);
         GL11.glPopMatrix();
         GL11.glPopAttrib();
+    }
+
+    public static void colorGL(final int color, final float alpha) {
+        final float r = (color >> 16 & 0xFF) / 255.0f;
+        final float g = (color >> 8 & 0xFF) / 255.0f;
+        final float b = (color & 0xFF) / 255.0f;
+        GlStateManager.color(r, g, b, alpha);
+    }
+
+    public static void colorGL(final int color) {
+        colorGL(color, (color >> 24 & 0xFF) / 255.0f);
     }
 
     public static void drawRoundedRect2(double x, double y, final double width, final double height, final double radius, final int color, final boolean half) {

@@ -79,7 +79,7 @@ public class APIUtils {
         HttpPost request = new HttpPost("https://api.minecraftservices.com/minecraft/profile/skins");
         request.setHeader("Authorization", "Bearer " + token);
         request.setHeader("Content-Type", "application/json");
-        String jsonString = String.format("{ \"variant\": \"classic\", \"url\": \"%s\"}", url);
+        String jsonString = String.format("{ \"variant\": \"slim\", \"url\": \"%s\"}", url);
         request.setEntity(new StringEntity(jsonString));
         CloseableHttpResponse response = client.execute(request);
         return response.getStatusLine().getStatusCode();

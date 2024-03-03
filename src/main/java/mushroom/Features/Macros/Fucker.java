@@ -46,13 +46,10 @@ public class Fucker {
             Rotations rot = RotationUtils.getLimitedRotation(RotationUtils.getLastReportedRotation(), RotationUtils.getRotations(blockMining.getX(), blockMining.getY(), blockMining.getZ()), (Configs.fuckerRotationsSpeed-20) + Math.abs((Configs.fuckerRotationsSpeed+20) - (Configs.fuckerRotationsSpeed-20)) * new Random().nextFloat());
             event.setRotation(rot);
 
-            yaw = event.yaw;
-
             event.setPitch(MathLib.clamp(event.pitch, 90.0f, -90.0f));
             ((PlayerSPAccessor)mc.thePlayer).setLastReportedYaw(event.yaw);
             ((PlayerSPAccessor)mc.thePlayer).setLastReportedPitch(event.pitch);
         }
-        else yaw = mc.thePlayer.cameraYaw;
 
         if (Configs.fucker && !mining) {
             int PlayerX = (int) mc.thePlayer.posX;
@@ -78,6 +75,7 @@ public class Fucker {
                     BlockPos block = blocksToMine.get(0);
 
                     if (checkIfWeUp(block)) {
+                        yaw = event.yaw;
                         if (Configs.fuckerMode == 2) {
                             BlockPos blockAbove = new BlockPos(block.getX(), block.getY()+1, block.getZ());
 
@@ -121,7 +119,7 @@ public class Fucker {
 
             startSlot = mc.thePlayer.inventory.currentItem;
 
-            //Notifications.popupmessage("Fucker", "§2breaking " + blockAtPos(pos).getLocalizedName());
+            Notifications.popupmessage("Fucker", "§2breaking " + blockAtPos(pos).getLocalizedName());
 
             mining = true;
 
@@ -129,7 +127,7 @@ public class Fucker {
 
             currentDamage = 0;
 
-            if (Configs.fuckerSwing == 0) mc.thePlayer.swingItem();
+            if (Configs.fuckerSwing == 1) mc.thePlayer.swingItem();
             else mc.getNetHandler().addToSendQueue(new C0APacketAnimation());
 
             mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, EnumFacing.fromAngle(yaw)));
@@ -147,6 +145,7 @@ public class Fucker {
                 } else {
                     if (!(blockAtPos(pos) instanceof BlockAir)) {
                         if (PlayerLib.distanceToPlayer(pos.getX(), pos.getY(), pos.getZ()) > Configs.fuckerReach) Notifications.popupmessage("Fucker", "§cwent out of range of bed");
+                        //mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, pos, EnumFacing.fromAngle(yaw)));
 
                         // annoying ass notification if ur using auto tool, will fix one day
                         //else Notifications.popupmessage("Fucker", "§cswapped hotbar slots");
@@ -166,8 +165,11 @@ public class Fucker {
             mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, EnumFacing.fromAngle(yaw)));
             addSurroundings(pos);
 
-            Notifications.popupmessage("Fucker", "§abroke " + blockAtPos(pos).getLocalizedName());
+            if (blockAtPos(pos) instanceof BlockBed) {
+                if (Configs.autoDisables) Configs.fucker = false;
+            }
 
+            Notifications.popupmessage("Fucker", "§abroke " + blockAtPos(pos).getLocalizedName());
 
             mining = false;
             blockMining = null;

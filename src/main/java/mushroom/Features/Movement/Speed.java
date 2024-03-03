@@ -11,10 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.MathHelper;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.potion.Potion;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.Sys;
@@ -68,18 +64,6 @@ public class Speed {
         final double bps = Math.hypot(Minecraft.getMinecraft().thePlayer.posX - Minecraft.getMinecraft().thePlayer.prevPosX, Minecraft.getMinecraft().thePlayer.posZ - Minecraft.getMinecraft().thePlayer.prevPosZ) * TimerLib.getTimer().timerSpeed * 20.0;
         return String.format("%.2f", bps);
     }
-
-    /*
-    @SubscribeEvent
-    public void onRender(final RenderGameOverlayEvent.Post event) {
-        if (Minecraft.getMinecraft().theWorld == null || Minecraft.getMinecraft().thePlayer == null || !Configs.speed) {
-            return;
-        }
-        if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
-            FontUtil.comicsans19.drawStringWithShadow(getBPS(), 20, 40, new Color(0,0,0).getRGB());
-        }
-    }
-     */
 
     public static void jump(float speedMulti) {
         Minecraft.getMinecraft().thePlayer.motionY = 0.41999998688697815;

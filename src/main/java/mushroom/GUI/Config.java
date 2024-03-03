@@ -39,6 +39,8 @@ public class Config extends CommandBase {
             HashMap map = new HashMap();
             Iterator settingsit = mushroom.settings.iterator();
 
+            new File(fileName).mkdirs();
+
             while (settingsit.hasNext()) {
                 Setting set = (Setting) settingsit.next();
                 map.put(set.name, set.get(Object.class));

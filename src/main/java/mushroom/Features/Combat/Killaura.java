@@ -1,6 +1,7 @@
 package mushroom.Features.Combat;
 
 import mushroom.Features.Movement.AntiVoid;
+import mushroom.Features.Movement.Nofall;
 import mushroom.GUI.Configs;
 import mushroom.Libs.*;
 import mushroom.Libs.events.MotionUpdateEvent;
@@ -122,7 +123,7 @@ public class Killaura {
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public void onMovePre(MotionUpdateEvent.Pre event) {
-        if (AntiVoid.isBlinking() || Configs.scaffold || !DISABLE.hasTimePassed(100L) || (!Configs.killaura || (Configs.swordonly && (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword))))) {
+        if (AntiVoid.isBlinking() || Nofall.noFallBlinking || Configs.scaffold || !DISABLE.hasTimePassed(100L) || (!Configs.killaura || (Configs.swordonly && (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSword))))) {
             target = null;
             return;
         }
@@ -252,7 +253,7 @@ public class Killaura {
                             if ((RotationUtils.getRotationDifference(RotationUtils.getRotations(target), RotationUtils.getLastReportedRotation()) < Configs.auraaccuracy)) {
                                 mc.playerController.attackEntity(mc.thePlayer, target);
                                 if (switchDelayTimer.hasTimePassed((long) Configs.switchdelay)) {
-                                    ++targetIndex;
+                                    targetIndex++;
                                     switchDelayTimer.reset();
                                 }
                             }

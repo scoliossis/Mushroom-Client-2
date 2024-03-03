@@ -1,7 +1,9 @@
 package mushroom.Features.Macros;
 
 import mushroom.Features.Movement.AntiVoid;
+import mushroom.Features.Movement.Nofall;
 import mushroom.Features.Movement.Speed;
+import mushroom.Features.Visual.Notifications;
 import mushroom.GUI.Configs;
 import mushroom.Libs.*;
 import mushroom.Libs.events.MotionUpdateEvent;
@@ -38,10 +40,15 @@ public class Scaffold {
 
     MovingObjectPosition rayrace = null;
 
+    boolean towering = false;
+    int towerTicks = 0;
+
+    int selectedSlot = -1;
+
     @SubscribeEvent
     public void onUpdate(final MotionUpdateEvent event) {
 
-        if (Configs.scaffold && !AntiVoid.isBlinking()) {
+        if (Configs.scaffold && !AntiVoid.isBlinking() && !Nofall.noFallBlinking) {
 
             final BlockPos pos = this.getClosestBlock();
 
@@ -63,18 +70,10 @@ public class Scaffold {
                     break;
                 }
             }
-            if (mc.gameSettings.keyBindJump.isKeyDown()) {
-                if (Configs.towermode == 0) {
-                    if (!mc.thePlayer.isPotionActive(Potion.jump) && PlayerLib.isOnGround(0.3)) {
-                        mc.thePlayer.motionY = 0.38999998569488525;
-                    }
-                    mc.thePlayer.setJumping(false);
-                }
-            }
 
             rayrace = rayTrace(event.getRotation());
 
-            final int selectedSlot = this.getBlock();
+            selectedSlot = this.getBlock();
             if (selectedSlot == -1) return;
 
             if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem()  instanceof ItemBlock)) {
@@ -84,7 +83,7 @@ public class Scaffold {
             }
 
 
-            if (this.ticks <= 0 && (mc.thePlayer.motionY <= Configs.maxYVeloc || !Configs.maxYVelo)) {
+            if (this.ticks <= 0 && (mc.thePlayer.motionY <= Configs.maxYVeloc || !Configs.maxYVelo || Configs.tower)) {
                 if (rayrace != null && rayrace.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.theWorld.getBlockState(rayrace.getBlockPos()).getBlock().isFullBlock()) {
                     if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getStackInSlot(selectedSlot), rayrace.getBlockPos(), rayrace.sideHit, rayrace.hitVec)) {
                         mc.thePlayer.swingItem();
@@ -99,6 +98,44 @@ public class Scaffold {
             }
             --this.ticks;
 
+        }
+    }
+
+    @SubscribeEvent
+    public void onUpdatePre(final MotionUpdateEvent.Pre event) {
+        if (Configs.scaffold && Configs.tower) {
+            if (mc.gameSettings.keyBindJump.isKeyDown() && Configs.towermode != 0 && mc.thePlayer.onGround) {
+                towering = true;
+            }
+            if (!mc.gameSettings.keyBindJump.isKeyDown() && towering) {
+                towering = false;
+            }
+            if (towering) {
+                if (mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock) {
+                    if (Configs.towermode == 0) {
+                        towerTicks++;
+                        if (mc.thePlayer.onGround) towerTicks = 0;
+                        mc.thePlayer.motionY = 0.41965;
+                        if (towerTicks == 1) mc.thePlayer.motionY = 0.30;
+                        if (towerTicks == 2) mc.thePlayer.motionY = 0.9 - mc.thePlayer.posY % 1;
+                        if (towerTicks == 3) {
+                            towerTicks = 0;
+                            towering = false;
+                        }
+                    }
+                    else if (Configs.towermode == 1) {
+                        MovementLib.setMotion(0.12875);
+                        towerTicks++;
+                        if (mc.thePlayer.onGround) towerTicks = 0;
+                        mc.thePlayer.motionY = 0.41965;
+                        if (towerTicks == 1) mc.thePlayer.motionY = 0.33;
+                        else if (towerTicks == 2) mc.thePlayer.motionY = 1 - mc.thePlayer.posY % 1;
+                        else if (towerTicks == 3) towerTicks = 0;
+                    }
+                } else {
+                    towering = false;
+                }
+            }
         }
     }
 
@@ -119,18 +156,18 @@ public class Scaffold {
     @SubscribeEvent
     public void onMove(final MoveEvent event) {
         // holy shit wtf switch statements exist
-        //if ((Configs.scafsprintmode != 4 && Configs.scafsprintmode != 5) || !mc.gameSettings.keyBindJump.isKeyDown()) {
-            if (Configs.scaffold && Configs.scafsprintmode != 0 && inGame()) {
-                if (Configs.scafsprintmode != 1 && Configs.scafsprintmode != 4) mc.thePlayer.setSprinting(false);
-                if (Configs.scafsprintmode == 3) return;
-                double speed = 0.2575;
-                if (Configs.scafsprintmode == 1) speed *= Configs.semisprintspeed;
-                if (Configs.scafsprintmode == 4) speed *= 0.30; // number from my ass
-                if (Configs.scafsprintmode == 5) speed *= 0.65; // ^^^^
+        if (Configs.scaffold && Configs.scafsprintmode != 0 && inGame()) {
+            if (Configs.scafsprintmode != 1 && Configs.scafsprintmode != 4) mc.thePlayer.setSprinting(false);
+            if (Configs.scafsprintmode == 3) return;
+            double speed = 0.2575;
+            if (Configs.scafsprintmode == 1) speed *= Configs.semisprintspeed;
+            if (Configs.scafsprintmode == 4) speed *= 0.30; // number from my ass
+            if (Configs.scafsprintmode == 5) speed *= 0.65; // ^^^^
 
+            if (mc.thePlayer.onGround || !Configs.tower) {
                 MovementLib.setMotion(speed, Configs.scaffoldJumpSprint, Configs.scaffoldJumpSpeed);
             }
-        //}
+        }
     }
 
     private BlockPos getClosestBlock() {

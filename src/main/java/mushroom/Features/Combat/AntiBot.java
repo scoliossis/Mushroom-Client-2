@@ -42,8 +42,7 @@ public class AntiBot {
     }
 
 
-    private static class EntityData
-    {
+    private static class EntityData {
         private int ticksInvisible;
         private int tabTicks;
         private final Entity entity;
@@ -67,10 +66,10 @@ public class AntiBot {
 
         public void update() {
             if (this.entity instanceof EntityPlayer && Minecraft.getMinecraft().getNetHandler() != null && Minecraft.getMinecraft().getNetHandler().getPlayerInfo(this.entity.getUniqueID()) != null) {
-                ++this.tabTicks;
+                this.tabTicks++;
             }
             if (this.entity.isInvisible()) {
-                ++this.ticksInvisible;
+                this.ticksInvisible++;
             }
         }
     }

@@ -185,6 +185,10 @@ public class Configs {
     @Property(type = Property.Type.COLOR, name = "Custom Color 2", description = "color of arraylist", parent = "Color", modereq = 5)
     public static int[] arraylistCustCol2 = new int[] {255, 255, 255, 255, 255, 0, 0, 0};
 
+    @Property(type = Property.Type.BOOLEAN, name = "Show Visuals", description = "shows visuals in the arraylist", parent = "Array List")
+    public static boolean showVisuals = false;
+    @Property(type = Property.Type.BOOLEAN, name = "Show Background", description = "shows a background behind the words", parent = "Array List")
+    public static boolean showBackgrounds = false;
     @Property(type = Property.Type.BOOLEAN, name = "Show Mode", description = "show the mode of settings", parent = "Array List")
     public static boolean showmode = true;
     @Property(type = Property.Type.SELECT, name = "Sideline", description = "draws a line on the side of the array list", parent = "Array List", options = {"none", "cool", "joined", "surround"})
@@ -337,6 +341,8 @@ public class Configs {
     public static float animationsSpeed = 0.4f;
     @Property(type = Property.Type.BOOLEAN, name = "Target Hud", description = "shows info about the person you are fighting", parent = "Visual")
     public static boolean targethud = true;
+    @Property(type = Property.Type.BOOLEAN, name = "Target ESP", description = "if the target hud should move with the target", parent = "Target Hud")
+    public static boolean targetESP = true;
     @Property(type = Property.Type.BOOLEAN, name = "Follow", description = "if the target hud should move with the target", parent = "Target Hud")
     public static boolean followTargetHud = true;
 
@@ -370,6 +376,10 @@ public class Configs {
 
     @Property(type = Property.Type.BOOLEAN, name = "Model Modifier", description = "choose model size :)", parent = "Visual")
     public static boolean modelModifier = true;
+    @Property(type = Property.Type.BOOLEAN, name = "New Me", description = "i feel sus", parent = "Model Modifier")
+    public static boolean newMeModel = true;
+    @Property(type = Property.Type.BOOLEAN, name = "New Everyone", description = "that guy is rather suspicious", parent = "Model Modifier")
+    public static boolean newEveryoneModel = true;
     @Property(type = Property.Type.NUMBER, name = "Model Width", description = "choose model width :)", parent = "Model Modifier", min = 0.01f, max = 5)
     public static float modelWidth = 1;
     @Property(type = Property.Type.NUMBER, name = "Model Depth", description = "choose model depth :)", parent = "Model Modifier", min = 0.01f, max = 5)
@@ -390,6 +400,17 @@ public class Configs {
     public static boolean bedPlaters = true;
     @Property(type = Property.Type.BOOLEAN, name = "Only 1 high", description = "only shows the block above", parent = "Bed Plate")
     public static boolean bedPlates1Laye = true;
+
+    @Property(type = Property.Type.BOOLEAN, name = "Watermark", description = "awesome watermark", parent = "Visual")
+    public static boolean Watermark = true;
+    @Property(type = Property.Type.TEXT, name = "Watermark Text", description = "awesome watermark", parent = "Watermark")
+    public static String watermarkText = "Mushroom";
+    @Property(type = Property.Type.BOOLEAN, name = "Scoreboard", description = "awesome scoreboard", parent = "Visual")
+    public static boolean Scoreboard = true;
+    @Property(type = Property.Type.BOOLEAN, name = "Scoreboard Outline", description = "awesome scoreboard", parent = "Scoreboard")
+    public static boolean scoreboardOutline = true;
+    @Property(type = Property.Type.BOOLEAN, name = "Hide Lobby", description = "gets those packet logging skids away >:(", parent = "Scoreboard")
+    public static boolean hideLobby = true;
 
     // ------------------------------------------------------------
     // ------------------------------------------------------------
@@ -442,10 +463,12 @@ public class Configs {
     //public static boolean highjump = false;
     @Property(type = Property.Type.BOOLEAN, name = "No Fall", description = "stops fall damage", parent = "Movement")
     public static boolean nofall = false;
-    @Property(type = Property.Type.SELECT, name = "No Fall Mode", description = "what anticheat!", parent = "No Fall", options = {"no ground", "ground spoof", "packet", "blink", "no ground post"})
+    @Property(type = Property.Type.SELECT, name = "No Fall Mode", description = "what anticheat!", parent = "No Fall", options = {"no ground", "ground spoof", "packet", "blink", "no ground post", "true no ground"})
     public static int nofallmode = 0;
-    @Property(type = Property.Type.NUMBER, name = "No Fall Height", description = "how high before spoof ground!", parent = "No Fall", max = 6)
+    @Property(type = Property.Type.NUMBER, name = "No Fall Height", description = "how high before spoof ground!", parent = "No Fall Mode", modereq = 2, max = 6)
     public static float nofallheight = 0;
+    @Property(type = Property.Type.BOOLEAN, name = "Auto Disable", description = "auto disables nofall after one time!", parent = "No Fall Mode", modereq = 3)
+    public static boolean autoDisableNoFall = true;
     //@Property(type = Property.Type.BOOLEAN, name = "Spider", description = "allows you to climb walls", parent = "Movement")
     //public static boolean spider = false;
     //@Property(type = Property.Type.BOOLEAN, name = "Strafe", description = "lets you strafe faster", parent = "Movement")
@@ -539,6 +562,8 @@ public class Configs {
 
     @Property(type = Property.Type.SELECT, name = "Fucker Mode", description = "wyd", parent = "Fucker", options = {"vanilla", "instant", "hypixel"})
     public static int fuckerMode = 2;
+    @Property(type = Property.Type.BOOLEAN, name = "Auto Disables", description = "auto disables after breaking a bed", parent = "Fucker")
+    public static boolean autoDisables = true;
     @Property(type = Property.Type.BOOLEAN, name = "Fucker Rotations", description = "head snaps to a random point on the bed", parent = "Fucker")
     public static boolean fuckerRotations = true;
     @Property(type = Property.Type.BOOLEAN, name = "Fucker Move Fix", description = "slows you down when bed nuking, helps bypass", parent = "Fucker Rotations")
@@ -546,12 +571,12 @@ public class Configs {
     @Property(type = Property.Type.NUMBER, name = "Fucker Rotations Speed", description = "speed of head snap", parent = "Fucker Rotations", min = 30, max = 150)
     public static float fuckerRotationsSpeed = 150;
     @Property(type = Property.Type.NUMBER, name = "Fucker Break Speed", description = "speed of breaking bed", parent = "Fucker Rotations", min = 0, max = 2)
-    public static float fuckerBreakSpeed = 0.7f;
+    public static float fuckerBreakSpeed = 1.05f;
 
 
     @Property(type = Property.Type.NUMBER, name = "Fucker Reach", description = "how far we at?", parent = "Fucker", min = 1, max = 6)
     public static float fuckerReach = 3;
-    @Property(type = Property.Type.SELECT, name = "Swing Type", description = "how far we at?", parent = "Fucker", options = {"Packet", "Normal"})
+    @Property(type = Property.Type.SELECT, name = "Swing Type", description = "how far we at?", parent = "Fucker", options = {"packet", "normal"})
     public static int fuckerSwing = 0;
     @Property(type = Property.Type.BOOLEAN, name = "Auto Tool", description = "automatically swaps to the best tool when breaking blocks", parent = "Macros")
     public static boolean autotool = false;
@@ -589,9 +614,6 @@ public class Configs {
     public static boolean maxYVelo = true;
     @Property(type = Property.Type.NUMBER, name = "Max Y Velocity", description = "max Y velocity to place blocks, stops flags from tower go brrrrr", parent = "Max Y Velo", max = 1)
     public static float maxYVeloc = 0.2f;
-
-    @Property(type = Property.Type.SELECT, name = "Tower Mode", description = "i wanna get high", parent = "Scaffold", options = {"low jump", "normal"})
-    public static int towermode = 1;
     @Property(type = Property.Type.SELECT, name = "Block Swap", description = "some anticheats hate packets >:(", parent = "Scaffold", options = {"normal", "packet"})
     public static int blockswap = 0;
 
@@ -601,6 +623,12 @@ public class Configs {
     public static float placemindelay = 1f;
     @Property(type = Property.Type.NUMBER, name = "Place Max Delay", description = "i wanna be slow", parent = "Scaffold", max = 5)
     public static float placemaxdelay = 1.5f;
+
+    @Property(type = Property.Type.BOOLEAN, name = "Tower", description = "i wanna go up quicker", parent = "Macros")
+    public static boolean tower = true;
+    @Property(type = Property.Type.SELECT, name = "Tower Mode", description = "i wanna get high", parent = "Tower", options = {"verus", "ncp", "hypixel"})
+    public static int towermode = 1;
+
     @Property(type = Property.Type.BOOLEAN, name = "Eagle", description = "stops you from falling of blocks", parent = "Macros")
     public static boolean eagle = false;
     @Property(type = Property.Type.SELECT, name = "Eagle Mode", description = "what stop mode", parent = "Eagle", options = {"crouch", "safewalk", "autoplace"})

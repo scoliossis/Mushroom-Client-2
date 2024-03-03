@@ -12,9 +12,11 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
@@ -27,10 +29,26 @@ import static mushroom.Libs.PlayerLib.isNPC;
 import static mushroom.Libs.PlayerLib.mc;
 
 public class TargetHud {
+
+    @SubscribeEvent
+    public void onRender(RenderWorldLastEvent event) {
+        if (Configs.targethud && Configs.targetESP && hudded != null) {
+            drawTargetESP(hudded, new Color(200,40,190), event.partialTicks);
+        }
+    }
+
+    EntityLivingBase hudded;
+
     @SubscribeEvent
     public void onRender(final RenderLivingEvent.Specials.Pre<EntityLivingBase> event) {
+        if (hudded == null || !(Configs.targethud && hudded instanceof EntityPlayer && hudded != mc.thePlayer && hudded.getDistanceToEntity(mc.thePlayer) < 6 && AntiBot.isValidEntity(hudded))) {
+            hudded = null;
+        }
+        if (hudded == null || event.entity == hudded || !(Configs.targethud && event.entity instanceof EntityPlayer && hudded != mc.thePlayer && hudded.getDistanceToEntity(mc.thePlayer) < 6 && AntiBot.isValidEntity(hudded)))
         if (Configs.targethud && event.entity instanceof EntityPlayer && event.entity != mc.thePlayer && event.entity.getDistanceToEntity(mc.thePlayer) < 6 && AntiBot.isValidEntity(event.entity)) {
             if (Configs.followTargetHud) {
+                hudded = event.entity;
+
                 event.setCanceled(true);
                 GlStateManager.alphaFunc(516, 0.1f);
                 final String name = event.entity.getName();
@@ -115,6 +133,7 @@ public class TargetHud {
                         FontUtil.productsans35.drawSmoothString(name, targetHudX + 41, targetHudY, -1);
                         FontUtil.productsans35.drawSmoothString(String.valueOf(health), targetHudX + 41, targetHudY + 17, -1);
 
+                        hudded = entityPlayer;
                         return;
                     }
                 }
@@ -194,5 +213,61 @@ public class TargetHud {
             targetHudW = 45 + targetHudX;
             targetHudH = 40 + targetHudY;
         }
+    }
+
+
+    public static void enableGL2D() {
+        GL11.glDisable(2929);
+        GL11.glEnable(3042);
+        GL11.glDisable(3553);
+        GL11.glBlendFunc(770, 771);
+        GL11.glDepthMask(true);
+        GL11.glEnable(2848);
+        GL11.glHint(3154, 4354);
+        GL11.glHint(3155, 4354);
+    }
+    public static void disableGL2D() {
+        GL11.glEnable(3553);
+        GL11.glDisable(3042);
+        GL11.glEnable(2929);
+        GL11.glDisable(2848);
+        GL11.glHint(3154, 4352);
+        GL11.glHint(3155, 4352);
+    }
+
+    public static void drawTargetESP(final EntityLivingBase target, final Color color, final float partialTicks) {
+        GL11.glPushMatrix();
+        final float location = (float)((Math.sin(System.currentTimeMillis() * 0.005) + 1.0) * 0.5);
+        GlStateManager.translate(target.lastTickPosX + (target.posX - target.lastTickPosX) * partialTicks - mc.getRenderManager().viewerPosX, target.lastTickPosY + (target.posY - target.lastTickPosY) * partialTicks - mc.getRenderManager().viewerPosY + target.height * location, target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * partialTicks - mc.getRenderManager().viewerPosZ);
+        enableGL2D();
+        GL11.glShadeModel(7425);
+        GL11.glDisable(2884);
+        GL11.glLineWidth(3.0f);
+        GL11.glEnable(2848);
+        GL11.glHint(3154, 4354);
+        GL11.glBegin(3);
+        final double cos = Math.cos(System.currentTimeMillis() * 0.005);
+        for (int i = 0; i <= 120; ++i) {
+            GL11.glColor4f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, 1.0f);
+            final double x = Math.cos(i * 3.141592653589793 / 60.0) * target.width;
+            final double z = Math.sin(i * 3.141592653589793 / 60.0) * target.width;
+            GL11.glVertex3d(x, 0.15000000596046448 * cos, z);
+        }
+        GL11.glEnd();
+        GL11.glDisable(2848);
+        GL11.glBegin(5);
+        for (int i = 0; i <= 120; ++i) {
+            GL11.glColor4f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, 0.5f);
+            final double x = Math.cos(i * 3.141592653589793 / 60.0) * target.width;
+            final double z = Math.sin(i * 3.141592653589793 / 60.0) * target.width;
+            GL11.glVertex3d(x, 0.15000000596046448 * cos, z);
+            GL11.glColor4f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, 0.2f);
+            GL11.glVertex3d(x, -0.15000000596046448 * cos, z);
+        }
+        GL11.glEnd();
+        GL11.glShadeModel(7424);
+        GL11.glEnable(2884);
+        disableGL2D();
+        GL11.glPopMatrix();
     }
 }
