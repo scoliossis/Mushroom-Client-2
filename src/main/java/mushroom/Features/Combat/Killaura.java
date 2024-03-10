@@ -5,7 +5,6 @@ import mushroom.Features.Movement.Nofall;
 import mushroom.GUI.Configs;
 import mushroom.Libs.*;
 import mushroom.Libs.events.MotionUpdateEvent;
-import mushroom.Libs.events.MoveEvent;
 import mushroom.Libs.events.MoveFlyingEvent;
 import mushroom.Libs.events.PacketReceivedEvent;
 import mushroom.mixins.PlayerSPAccessor;
@@ -21,6 +20,7 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemSword;
+import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
@@ -127,6 +127,7 @@ public class Killaura {
             target = null;
             return;
         }
+
         target = getTarget();
         if (Configs.mousedown && !mc.gameSettings.keyBindAttack.isKeyDown()) {
             return;
@@ -213,7 +214,7 @@ public class Killaura {
 
                     mc.thePlayer.swingItem();
 
-                    if (mc.thePlayer.getDistanceToEntity(target) < ((float) Configs.aurareach)) {
+                    if (mc.thePlayer.getDistanceToEntity(target) < (Configs.aurareach)) {
                         if ((RotationUtils.getRotationDifference(RotationUtils.getRotations(target), RotationUtils.getLastReportedRotation()) < Configs.auraaccuracy)) {
                             mc.playerController.attackEntity(mc.thePlayer, target);
                             if (switchDelayTimer.hasTimePassed((long) Configs.switchdelay)) {
@@ -251,7 +252,9 @@ public class Killaura {
 
                         if (mc.thePlayer.getDistanceToEntity(target) < (Configs.aurareach)) {
                             if ((RotationUtils.getRotationDifference(RotationUtils.getRotations(target), RotationUtils.getLastReportedRotation()) < Configs.auraaccuracy)) {
-                                mc.playerController.attackEntity(mc.thePlayer, target);
+                                if (Configs.packetAttack) PacketUtils.sendPacketNoEvent(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
+                                else mc.playerController.attackEntity(mc.thePlayer, target);
+
                                 if (switchDelayTimer.hasTimePassed((long) Configs.switchdelay)) {
                                     targetIndex++;
                                     switchDelayTimer.reset();

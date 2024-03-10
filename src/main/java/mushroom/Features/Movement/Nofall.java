@@ -60,7 +60,7 @@ public class Nofall {
                     if (event.packet instanceof C03PacketPlayer) ((C03Accessor)event.packet).setOnGround(true);
                     packetQueue.offer(event.packet);
 
-                    if ((((mc.thePlayer.onGround && mc.thePlayer.fallDistance > 0 && packetQueue.size() > 5)) || !PlayerLib.isOverAir() || PlayerLib.isOverVoid())) {
+                    if ((((mc.thePlayer.onGround && mc.thePlayer.fallDistance > 0 && packetQueue.size() > 5)) || !PlayerLib.isOverAir() || (mc.thePlayer.fallDistance > 10 && PlayerLib.isOverVoid()))) {
                         mc.thePlayer.fallDistance = 0.0f;
                         gogogo = true;
                     }
@@ -82,7 +82,7 @@ public class Nofall {
                     }
                 }
             }
-            else if (Configs.nofallmode == 0) {
+            else if (Configs.nofallmode == 0 && event.packet instanceof C03PacketPlayer) {
                 ((C03Accessor)event.packet).setOnGround(false);
             }
             else if (Configs.nofallmode == 5 && event.packet instanceof C03PacketPlayer) {

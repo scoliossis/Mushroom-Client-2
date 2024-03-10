@@ -24,11 +24,8 @@ public class ArrayListRender {
 
     @SubscribeEvent
     public void renderString(TickEvent.RenderTickEvent tick) {
+
         if ((Configs.arraylist && PlayerLib.inGame()) || (CoolMainMenu.incoolmainmenu && Configs.showarraylistinmainmenu && !PlayerLib.inGame())) {
-            if (mushroom.arraycolor > 254) mushroom.godown=true;
-            else if (mushroom.arraycolor < 1) mushroom.godown=false;
-            if (mushroom.godown) mushroom.arraycolor--;
-            else mushroom.arraycolor++;
 
             String settings = "";
             Iterator allsettings = mushroom.settings.iterator();
@@ -73,31 +70,31 @@ public class ArrayListRender {
 
                     if (Configs.arraylistpos == 0) {
                         if (Configs.showBackgrounds)
-                        drawGradientRect(0,1, 1 + (10*i), (int) (2 + FontUtil.productsans19.getStringWidth(EachSettingSplit[p])+3), 1 + (10 * i) + 10, new Color(23,23,23,100).getRGB(), new Color(23,23,23,100).getRGB());
+                        drawGradientRect(0,1, 1 + (10*i), (int) (2 + FontUtil.font("productsans", 19).getStringWidth(EachSettingSplit[p])+3), 1 + (10 * i) + 10, new Color(23,23,23,100).getRGB(), new Color(23,23,23,100).getRGB());
                         if (Configs.sideline == 1) drawGradientRect(0, 0, 2 + (10 * i), 1, 1 + (10 * i) + 8, colorOfText[0].getRGB(), colorOfText[1].getRGB());
                         else if (Configs.sideline == 2) drawGradientRect(0, 0, 1 + (10 * i), 1, 1 + (10 * i) + 10, colorOfText[0].getRGB(), colorOfText[1].getRGB());
 
-                        FontUtil.productsans19.drawStringWithShadow(EachSettingSplit[p], 2, 1 + (10 * i)+1, colorOfText[0].getRGB());
+                        FontUtil.font("productsans", 19).drawStringWithShadow(EachSettingSplit[p], 2, 1 + (10 * i)+1, colorOfText[0].getRGB());
                     } else if (Configs.arraylistpos == 1) {
                         if (Configs.showBackgrounds)
-                        drawGradientRect(0, (int) ((s.getScaledWidth()) - FontUtil.productsans19.getStringWidth(EachSettingSplit[p]) - 4), 1 + (10 * i), s.getScaledWidth(), 1 + (10 * i) + 10, new Color(23,23,23,100).getRGB(), new Color(23,23,23,100).getRGB());
+                        drawGradientRect(0, (int) ((s.getScaledWidth()) - FontUtil.font("productsans", 19).getStringWidth(EachSettingSplit[p]) - 4), 1 + (10 * i), s.getScaledWidth(), 1 + (10 * i) + 10, new Color(23,23,23,100).getRGB(), new Color(23,23,23,100).getRGB());
                         if (Configs.sideline == 1) drawGradientRect(0, s.getScaledWidth() - 1, 2 + (10 * i), s.getScaledWidth(), 1 + (10 * i) + 8, colorOfText[0].getRGB(), colorOfText[1].getRGB());
                         else if (Configs.sideline == 2) drawGradientRect(0, s.getScaledWidth() - 1, 1 + (10 * i), s.getScaledWidth(), 1 + (10 * i) + 10, colorOfText[0].getRGB(), colorOfText[1].getRGB());
                         else if (Configs.sideline == 3)  {
                             drawGradientRect(0, s.getScaledWidth() - 1, 1 + (10 * i), s.getScaledWidth(), 1 + (10 * i) + 10, colorOfText[0].getRGB(), colorOfText[1].getRGB());
-                            drawGradientRect(0, (int) ((s.getScaledWidth()) - FontUtil.productsans19.getStringWidth(EachSettingSplit[p]) - 5), 1 + (10 * i), (int) ((s.getScaledWidth()) - FontUtil.productsans19.getStringWidth(EachSettingSplit[p]) - 4), 1 + (10 * i) + 10, colorOfText[0].getRGB(), colorOfText[1].getRGB());
+                            drawGradientRect(0, (int) ((s.getScaledWidth()) - FontUtil.font("productsans", 19).getStringWidth(EachSettingSplit[p]) - 5), 1 + (10 * i), (int) ((s.getScaledWidth()) - FontUtil.font("productsans", 19).getStringWidth(EachSettingSplit[p]) - 4), 1 + (10 * i) + 10, colorOfText[0].getRGB(), colorOfText[1].getRGB());
                             if (p == 0) {
-                                drawGradientRect(0, (int) ((s.getScaledWidth()) - FontUtil.productsans19.getStringWidth(EachSettingSplit[p]) - 5), 0, (s.getScaledWidth()), 1, colorOfText[0].getRGB(), colorOfText[1].getRGB());
+                                drawGradientRect(0, (int) ((s.getScaledWidth()) - FontUtil.font("productsans", 19).getStringWidth(EachSettingSplit[p]) - 5), 0, (s.getScaledWidth()), 1, colorOfText[0].getRGB(), colorOfText[1].getRGB());
                             }
                             if (p == EachSettingSplit.length-1) {
-                                drawGradientRect(0, (int) ((s.getScaledWidth()) - FontUtil.productsans19.getStringWidth(EachSettingSplit[p]) - 5), 1 + (10 * i) + 10, (s.getScaledWidth()), 1 + (10 * i)+11, colorOfText[0].getRGB(), colorOfText[1].getRGB());
+                                drawGradientRect(0, (int) ((s.getScaledWidth()) - FontUtil.font("productsans", 19).getStringWidth(EachSettingSplit[p]) - 5), 1 + (10 * i) + 10, (s.getScaledWidth()), 1 + (10 * i)+11, colorOfText[0].getRGB(), colorOfText[1].getRGB());
                             }
                             else {
-                                drawGradientRect(0, (int) ((s.getScaledWidth()) - FontUtil.productsans19.getStringWidth(EachSettingSplit[p]) - 5), 1 + (10 * i) + 10, (int) ((s.getScaledWidth()) - FontUtil.productsans19.getStringWidth(EachSettingSplit[p+1]) - 4), 1 + (10 * i)+11, colorOfText[0].getRGB(), colorOfText[1].getRGB());
+                                drawGradientRect(0, (int) ((s.getScaledWidth()) - FontUtil.font("productsans", 19).getStringWidth(EachSettingSplit[p]) - 5), 1 + (10 * i) + 10, (int) ((s.getScaledWidth()) - FontUtil.font("productsans", 19).getStringWidth(EachSettingSplit[p+1]) - 4), 1 + (10 * i)+11, colorOfText[0].getRGB(), colorOfText[1].getRGB());
                             }
                         }
 
-                        FontUtil.productsans19.drawStringWithShadow(EachSettingSplit[p], ((double) s.getScaledWidth()) - FontUtil.productsans19.getStringWidth(EachSettingSplit[p]) - 3, 1 + (10 * i)+1, colorOfText[0].getRGB());
+                        FontUtil.font("productsans", 19).drawStringWithShadow(EachSettingSplit[p], ((double) s.getScaledWidth()) - FontUtil.font("productsans", 19).getStringWidth(EachSettingSplit[p]) - 3, 1 + (10 * i)+1, colorOfText[0].getRGB());
                     }
                     i++;
                 }
@@ -110,7 +107,7 @@ public class ArrayListRender {
             String temp = s[i];
 
             int j = i - 1;
-            while (j >= 0 && FontUtil.productsans19.getStringWidth(s[j]) < FontUtil.productsans19.getStringWidth(temp)) {
+            while (j >= 0 && FontUtil.font("productsans", 19).getStringWidth(s[j]) < FontUtil.font("productsans", 19).getStringWidth(temp)) {
                 s[j+1] = s[j];
                 j--;
             }

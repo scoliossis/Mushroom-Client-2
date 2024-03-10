@@ -1,7 +1,9 @@
 package mushroom.Features.Visual;
 
 import mushroom.Features.Combat.AntiBot;
+import mushroom.GUI.ClickGUI;
 import mushroom.GUI.Configs;
+import mushroom.Libs.ChatLib;
 import mushroom.Libs.FontLib.FontUtil;
 import mushroom.Libs.MathLib;
 import mushroom.Libs.PlayerLib;
@@ -17,45 +19,79 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 
 import static mushroom.Libs.PlayerLib.isNPC;
 import static mushroom.Libs.PlayerLib.mc;
+import static mushroom.mushroom.sillyfolderpath;
 
 public class TargetHud {
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {
-        if (Configs.targethud && Configs.targetESP && hudded != null) {
-            drawTargetESP(hudded, new Color(200,40,190), event.partialTicks);
+        if (Configs.targethud && hudded != null && (hudded instanceof EntityPlayer && hudded.getDistanceToEntity(mc.thePlayer) < 6 && AntiBot.isValidEntity(hudded))) {
+            if (Configs.targetESP && hudded != mc.thePlayer) drawTargetESP(hudded, new Color(200,40,190), event.partialTicks);
         }
     }
 
+    @SubscribeEvent
+    public void clientTick(TickEvent.ClientTickEvent m) {
+        // probably not smart but oh well.
+        if (drawing) {
+            if (!did) {
+                did = true;
+                fadeStart = System.currentTimeMillis();
+            }
+            if (fadeprog < 1) {
+                fadeprog += (System.currentTimeMillis() - fadeStart) * 0.001f;
+            }
+            else fadeprog = 1;
+        }
+        else {
+            if (did) {
+                did = false;
+                fadeEnd = System.currentTimeMillis();
+            }
+            if (fadeprog > 0.01) {
+
+                fadeprog -= (System.currentTimeMillis() - fadeEnd) * 0.001f;
+            }
+            else fadeprog = 0.01f;
+        }
+    }
+
+    boolean did = false;
+
+    float fadeprog = 0.01f;
+    public static boolean drawing = false;
+    long fadeStart = 0;
+    long fadeEnd = 0;
+    long lastFade = 0;
+
     EntityLivingBase hudded;
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onRender(final RenderLivingEvent.Specials.Pre<EntityLivingBase> event) {
-        if (hudded == null || !(Configs.targethud && hudded instanceof EntityPlayer && hudded != mc.thePlayer && hudded.getDistanceToEntity(mc.thePlayer) < 6 && AntiBot.isValidEntity(hudded))) {
-            hudded = null;
-        }
-        if (hudded == null || event.entity == hudded || !(Configs.targethud && event.entity instanceof EntityPlayer && hudded != mc.thePlayer && hudded.getDistanceToEntity(mc.thePlayer) < 6 && AntiBot.isValidEntity(hudded)))
-        if (Configs.targethud && event.entity instanceof EntityPlayer && event.entity != mc.thePlayer && event.entity.getDistanceToEntity(mc.thePlayer) < 6 && AntiBot.isValidEntity(event.entity)) {
-            if (Configs.followTargetHud) {
+        if (Configs.targethud && !Configs.notfollowTargetHud) {
+            if (((event.entity instanceof EntityPlayer && event.entity.getDistanceToEntity(mc.thePlayer) < 6 && AntiBot.isValidEntity(event.entity)))) {
                 hudded = event.entity;
 
-                event.setCanceled(true);
                 GlStateManager.alphaFunc(516, 0.1f);
-                final String name = event.entity.getName();
                 final double x = event.x;
                 final double y = event.y;
                 final double z = event.z;
-                final float f = Math.max(1.4f, event.entity.getDistanceToEntity(mc.thePlayer) / 10.0f);
+                final float f = 0.9f;
                 final float scale = 0.016666668f * f;
                 GlStateManager.pushMatrix();
                 GlStateManager.translate((float) x, (float) y + event.entity.height - 0.7, (float) z);
@@ -68,99 +104,177 @@ public class TargetHud {
                 GlStateManager.disableDepth();
                 GlStateManager.enableBlend();
                 GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-                float textWidth = (float) FontUtil.productsans19.getStringWidth(name);
-                // if (textWidth < FontUtil.comicsans19.getStringWidth("h: " + Math.round(event.entity.getHealth())) + FontUtil.comicsans19.getStringWidth("d: " + Math.round(event.entity.getDistanceToEntity(mc.thePlayer))) + 6) {
-                //    textWidth = (float) (FontUtil.comicsans19.getStringWidth("h: " + Math.round(event.entity.getHealth())) + FontUtil.comicsans19.getStringWidth("d: " + Math.round(event.entity.getDistanceToEntity(mc.thePlayer))) + 6);
-                //}
                 GlStateManager.disableTexture2D();
-                RenderLib.drawRect(0, 20, textWidth + 30, -3.0f, new Color(20, 20, 20, 80).getRGB());
-                int healthcolor = (int) ((event.entity.getHealth() / event.entity.getMaxHealth()) * 255);
-                if (healthcolor > 255) {
-                    healthcolor = 255;
-                }
-                RenderLib.drawRect(0, 18, ((textWidth + 30) * event.entity.getHealth() / event.entity.getMaxHealth()), 20, new Color(255 - healthcolor, healthcolor, 0).getRGB());
-                RenderLib.drawHead(4, 1, 16, 16, (AbstractClientPlayer) event.entity);
 
-                GlStateManager.enableTexture2D();
-                FontUtil.productsans19.drawSmoothString(name, 25, 0, -1);
 
-                float health = Float.parseFloat(new DecimalFormat("#.##").format(event.entity.getHealth()).replaceAll(",", "."));
-                FontUtil.productsans19.drawSmoothString(String.valueOf(health), 25, 10, -1);
+                drawing = true;
+                drawHud(event.entity, 0, 0, false);
+
 
                 GlStateManager.enableDepth();
                 GlStateManager.depthMask(true);
-                FontUtil.productsans19.drawSmoothString(name, 25, 0, -1);
+                GlStateManager.enableLighting();
+                GlStateManager.disableBlend();
+                GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+                GlStateManager.popMatrix();
+
+
+                return;
+            }
+            if (hudded != null && fadeprog != 0.01f && Configs.popUpAnimation == 2 && hudded instanceof AbstractClientPlayer) {
+                GlStateManager.alphaFunc(516, 0.1f);
+                final double x = event.x;
+                final double y = event.y;
+                final double z = event.z;
+                final float f = 0.7f;
+                final float scale = 0.016666668f * f;
+                GlStateManager.pushMatrix();
+                GlStateManager.translate((float) x, (float) y + event.entity.height - 0.7, (float) z);
+                GL11.glNormal3f(0.0f, 1.0f, 0.0f);
+                GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
+                GlStateManager.rotate(mc.getRenderManager().playerViewX, 1.0f, 0.0f, 0.0f);
+                GlStateManager.scale(-scale, -scale, scale);
+                GlStateManager.disableLighting();
+                GlStateManager.depthMask(false);
+                GlStateManager.disableDepth();
+                GlStateManager.enableBlend();
+                GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+                GlStateManager.disableTexture2D();
+
+
+                drawHud(hudded);
+
+
+                GlStateManager.enableDepth();
+                GlStateManager.depthMask(true);
                 GlStateManager.enableLighting();
                 GlStateManager.disableBlend();
                 GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
                 GlStateManager.popMatrix();
             }
+
+            drawing = false;
         }
     }
 
-    int targetHudX = 0;
-    int targetHudY = 0;
-    float targetHudW = 45 + targetHudX;
-    float targetHudH = 40 + targetHudY;
+    public static int targetHudX = 0;
+    public static int targetHudY = 0;
+    int targetHudW = 45;
+    int targetHudH = 40;
 
     @SubscribeEvent
     public void renderString(TickEvent.RenderTickEvent tick) {
 
         if (Configs.targethud && PlayerLib.inGame()) {
-            if (!Configs.followTargetHud) {
+            if (Configs.notfollowTargetHud) {
                 for (final EntityPlayer entityPlayer : mc.theWorld.playerEntities) {
 
                     if (entityPlayer != mc.thePlayer && entityPlayer.getDistanceToEntity(mc.thePlayer) < 6 && AntiBot.isValidEntity(entityPlayer) && !PlayerLib.isTeam(entityPlayer) && (mc.currentScreen == null || mc.currentScreen instanceof GuiChat)) {
-
-                        ScaledResolution s = new ScaledResolution(Minecraft.getMinecraft());
-
-                        final String name = entityPlayer.getName();
-                        float textWidth = (float) FontUtil.productsans35.getStringWidth(name);
-
-                        float healthPercent = (entityPlayer.getHealth() / Math.min(entityPlayer.getHealth(), entityPlayer.getMaxHealth()));
-                        int healthcolor = (int) Math.max((healthPercent * 255), 255);
-                        float health = Float.parseFloat(new DecimalFormat("#.##").format(entityPlayer.getHealth()).replaceAll(",", "."));
-
-                        float boxW = targetHudW + textWidth;
-
-
-                        RenderLib.drawRoundedRect2(targetHudX, targetHudY-3, boxW-targetHudX, targetHudH-targetHudY+2, 6, new Color(20, 20, 20, 80).getRGB(), true);
-
-                        RenderLib.drawRect(targetHudX, targetHudH - 5, (targetHudX + ((boxW-targetHudX) * (entityPlayer.getHealth() / entityPlayer.getMaxHealth()))), targetHudH, new Color(255 - healthcolor, healthcolor, 0).getRGB());
-
-                        RenderLib.drawHead((targetHudX + 4), (int) (targetHudY + 1), 32, 32, (AbstractClientPlayer) entityPlayer);
-
-                        FontUtil.productsans35.drawSmoothString(name, targetHudX + 41, targetHudY, -1);
-                        FontUtil.productsans35.drawSmoothString(String.valueOf(health), targetHudX + 41, targetHudY + 17, -1);
-
+                        drawing = true;
+                        drawHud(entityPlayer);
                         hudded = entityPlayer;
                         return;
                     }
                 }
 
+
                 if (showOwn && mc.currentScreen instanceof GuiChat) {
-                    final String name = mc.thePlayer.getName();
-                    float textWidth = (float) FontUtil.productsans35.getStringWidth(name);
+                    drawing = true;
+                    hudded = mc.thePlayer;
+                    drawHud(mc.thePlayer, true);
+                    return;
+                }
 
-                    float healthPercent = (mc.thePlayer.getHealth() / mc.thePlayer.getMaxHealth());
-                    int healthcolor = (int) Math.max((healthPercent * 255), 255);
-                    float health = Float.parseFloat(new DecimalFormat("#.##").format(mc.thePlayer.getHealth()).replaceAll(",", "."));
-
-                    float boxW = targetHudW + textWidth;
-
-
-                    RenderLib.drawRoundedRect2(targetHudX, targetHudY-3, boxW-targetHudX, targetHudH-targetHudY+2, 6, new Color(20, 20, 20, 80).getRGB(), true);
-
-                    RenderLib.drawRect(targetHudX, targetHudH - 5, (targetHudX+ ((boxW-targetHudX) * mc.thePlayer.getHealth() / mc.thePlayer.getMaxHealth())), targetHudH, new Color(255 - healthcolor, healthcolor, 0).getRGB());
-
-                    RenderLib.drawHead((int) (targetHudX + 4), (targetHudY + 1), 32, 32, mc.thePlayer);
-
-                    FontUtil.productsans35.drawSmoothString(name, targetHudX + 41, targetHudY, -1);
-                    FontUtil.productsans35.drawSmoothString(String.valueOf(health), targetHudX + 41, targetHudY + 17, -1);
-
+                if (fadeprog != 0.01f && hudded != null && Configs.popUpAnimation != 2) {
+                    drawHud(hudded);
                 }
             }
+
+            drawing = false;
         }
+    }
+
+    public static void doTrans(RenderLivingEvent.Specials.Pre<EntityLivingBase> event) {
+        GlStateManager.alphaFunc(516, 0.1f);
+        final double x = event.x;
+        final double y = event.y;
+        final double z = event.z;
+        final float f = 0.7f;
+        final float scale = 0.016666668f * f;
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float) x, (float) y + event.entity.height - 0.7, (float) z);
+        GL11.glNormal3f(0.0f, 1.0f, 0.0f);
+        GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
+        GlStateManager.rotate(mc.getRenderManager().playerViewX, 1.0f, 0.0f, 0.0f);
+        GlStateManager.scale(-scale, -scale, scale);
+        GlStateManager.disableLighting();
+        GlStateManager.depthMask(false);
+        GlStateManager.disableDepth();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.disableTexture2D();
+    }
+
+    public static void doUnTrans(RenderLivingEvent.Specials.Pre<EntityLivingBase> event) {
+        GlStateManager.enableDepth();
+        GlStateManager.depthMask(true);
+        GlStateManager.enableLighting();
+        GlStateManager.disableBlend();
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+        GlStateManager.popMatrix();
+    }
+
+    public void drawHud(EntityLivingBase entity, boolean nwor) {
+        drawHud(entity, targetHudX, targetHudY, nwor);
+    }
+
+    public void drawHud(EntityLivingBase entity) {
+        drawHud(entity, targetHudX, targetHudY, false);
+    }
+
+    public void drawHud(EntityLivingBase entity, int x, int y, boolean fake) {
+        if (!fake) lastFade = System.currentTimeMillis();
+
+        ScaledResolution s = new ScaledResolution(mc);
+
+        final String name = entity.getName();
+        float textWidth = (float) FontUtil.font("productsans", 35).getStringWidth(name);
+
+        float health = Float.parseFloat(new DecimalFormat("#.##").format(entity.getHealth()).replaceAll(",", "."));
+
+        float multi = 1;
+        fadeprog = Math.max(Math.min(1, fadeprog), 0);
+        if (Configs.popUpAnimation == 1 && Configs.notfollowTargetHud) multi = Math.max(fadeprog, 0.1f);
+
+        float op = 1;
+        if (Configs.popUpAnimation == 0 && Configs.notfollowTargetHud) op = fadeprog;
+
+        int newEgs = (int) (x + (((x/2) - ((x/2)*multi)) / 2));
+        int newWhy = (int) (y + (((y/2) - ((y/2)*multi)) / 2));
+
+        if (Configs.popUpAnimation == 3 && Configs.notfollowTargetHud) {
+            if (drawing) newEgs = (int) (x * fadeprog);
+            else newEgs = (int) (x + ((s.getScaledWidth()-x) * (1-fadeprog)));
+        }
+
+        float boxW = targetHudW*multi;
+        float boxH = targetHudH*multi;
+
+        Color col = ClickGUI.getColor(Configs.BackgroundColor, Configs.BackgroundColor[3]*op);
+        if (Configs.ThudCustomColor) col = ClickGUI.getColor(Configs.thudbg1, Configs.thudbg1[3]*op);
+
+        RenderLib.drawRoundedRect2(newEgs, newWhy - (int) (3*multi), (int) ((boxW + textWidth) * multi), (int) ((boxH + 2) * multi), 6, col.getRGB(), true);
+
+        Color[] fadeHealthColors = RenderLib.getColorsFade(0, ((boxW+textWidth) * entity.getHealth() / entity.getMaxHealth()), 50, ClickGUI.getColor(Configs.healthBarColor1, Configs.healthBarColor1[3]*op), ClickGUI.getColor(Configs.healthBarColor2, Configs.healthBarColor2[3]*op), 0.01);
+        if (Configs.ThudCustomColor)
+            fadeHealthColors = RenderLib.getColorsFade(0, ((boxW+textWidth) * entity.getHealth() / entity.getMaxHealth()), 50, ClickGUI.getColor(Configs.thudhealth1, Configs.thudhealth1[3]*op), ClickGUI.getColor(Configs.thudhealth2, Configs.thudhealth2[3]*op), 0.01);
+
+        RenderLib.drawFade(newEgs, (int) (newWhy + (boxH - 6)), (int) (((boxW+textWidth) * (entity.getHealth() / entity.getMaxHealth()))), (int) (5*multi), fadeHealthColors[0], fadeHealthColors[1]);
+
+        RenderLib.drawHead((int) (newEgs + (4*multi)), (int) (newWhy + (1*multi)), (int) (32*multi), (int) (32*multi), (AbstractClientPlayer) entity, op);
+
+        FontUtil.font("productsans", (int) (35 * multi)).drawString(name, newEgs + (41*multi), newWhy, new Color(255, 255, 255, (int) (op*255)).getRGB());
+        FontUtil.font("productsans", (int) (33 * op)).drawString(health + "", newEgs + (41*multi), newWhy + (17*multi), new Color(255, 255, 255, (int) (op*255)).getRGB());
     }
 
     boolean showOwn = false;
@@ -172,7 +286,7 @@ public class TargetHud {
 
     @SubscribeEvent
     public void onChatEvent(final GuiChatEvent event) {
-        if (!Configs.targethud || Configs.followTargetHud) {
+        if (!Configs.targethud || !Configs.notfollowTargetHud) {
             return;
         }
 
@@ -187,6 +301,10 @@ public class TargetHud {
         }
 
         else if (event instanceof GuiChatEvent.Closed) {
+
+            try {Files.write(Paths.get(sillyfolderpath + "/extras/sillys.scolio"), ("targetHudX:" + targetHudX + " \ntargetHudY:" + targetHudY + " \n").getBytes());
+            } catch (IOException e) {e.printStackTrace();}
+
             showOwn = false;
             dragging = false;
         }
@@ -210,8 +328,8 @@ public class TargetHud {
         if (dragging) {
             targetHudX = mouseX() - offsetX;
             targetHudY = mouseY() - offsetY;
-            targetHudW = 45 + targetHudX;
-            targetHudH = 40 + targetHudY;
+            targetHudW = 45;
+            targetHudH = 40;
         }
     }
 

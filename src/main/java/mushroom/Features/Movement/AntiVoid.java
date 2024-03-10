@@ -26,7 +26,7 @@ public class AntiVoid {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPacket(PacketSentEvent event) {
         // mode blink
-        if (Configs.antivoid && event.packet instanceof C03PacketPlayer) {
+        if (Configs.antivoid && event.packet instanceof C03PacketPlayer && !Configs.scaffold) {
 
             if (PlayerLib.isOverVoid()) {
 

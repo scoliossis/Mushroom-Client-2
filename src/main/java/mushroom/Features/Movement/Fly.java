@@ -12,13 +12,6 @@ import static mushroom.Libs.PlayerLib.mc;
 public class Fly {
 
     boolean flyon = false;
-    private boolean placed;
-    private boolean isFlying;
-    private int ticks;
-    private int stage;
-    private int flyingTicks;
-    private int distance;
-
     int hurttime = 0;
     double xmot = 0;
     double ymot = 0;
@@ -34,27 +27,18 @@ public class Fly {
                     mc.thePlayer.fallDistance = 0;
                 }
                 if (mc.gameSettings.keyBindJump.isKeyDown()) {
-                    mc.thePlayer.motionY += (double) Configs.flyverticlespeed;
+                    mc.thePlayer.motionY += Configs.flyverticlespeed;
                 }
                 if (mc.gameSettings.keyBindSneak.isKeyDown()) {
-                    mc.thePlayer.motionY -= (double) Configs.flyverticlespeed;
+                    mc.thePlayer.motionY -= Configs.flyverticlespeed;
                 }
-                MovementLib.setMotion((double) Configs.flyhorizonstalspeed);
-
-                if (flyon != Configs.fly && Configs.toggletimeronfly) {
-                    if (Configs.fly) {
-                        Configs.timer = true;
-                    }
-                    else {
-                        Configs.timer = false;
-                    }
-                }
+                MovementLib.setMotion(Configs.flyhorizonstalspeed);
             }
 
             else if (Configs.flymode == 1) {
                 if (mc.thePlayer.hurtTime > hurttime && !kb) {
                     mc.thePlayer.motionX = xmot * Configs.flyhorizonstalspeed * 10;
-                    mc.thePlayer.motionY = (double) Configs.flyverticlespeed;
+                    mc.thePlayer.motionY = Configs.flyverticlespeed;
                     mc.thePlayer.motionZ = zmot * Configs.flyhorizonstalspeed * 10;
                     kb = true;
                 } else if (mc.thePlayer.hurtTime == 2 && kb) {
@@ -68,6 +52,9 @@ public class Fly {
                 zmot = mc.thePlayer.motionZ;
                 hurttime = mc.thePlayer.hurtTime;
             }
+        }
+        if (flyon && !Configs.fly && Configs.toggletimeronfly && Configs.flymode == 0) {
+            Configs.timer = false;
         }
         flyon = Configs.fly;
     }

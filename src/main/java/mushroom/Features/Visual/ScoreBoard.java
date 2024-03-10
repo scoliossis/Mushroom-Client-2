@@ -45,12 +45,12 @@ public class ScoreBoard {
         else {
             collection = list;
         }
-        float width = (float) FontUtil.productsans19.getStringWidth(objective.getDisplayName());
-        final int fontHeight = (FontUtil.productsans19.getHeight() + 2);
+        float width = (float) FontUtil.font("productsans", 19).getStringWidth(objective.getDisplayName());
+        final int fontHeight = (FontUtil.font("productsans", 19).getHeight() + 2);
         for (final Score score : collection) {
             final ScorePlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(score.getPlayerName());
             final String s = ScorePlayerTeam.formatPlayerName(scoreplayerteam, score.getPlayerName()) + ": " + EnumChatFormatting.RED + score.getScorePoints();
-            width = (float) Math.max(width, FontUtil.productsans19.getStringWidth(s));
+            width = (float) Math.max(width, FontUtil.font("productsans", 19).getStringWidth(s));
         }
         final float i1 = (float)(collection.size() * fontHeight);
         float j1 = p_180475_2_.getScaledHeight() / 2.0f + i1 / 3.0f;
@@ -60,7 +60,7 @@ public class ScoreBoard {
         final float m = p_180475_2_.getScaledWidth() - k1 + 2.0f;
 
         RenderLib.drawRoundedRect2(l1 - 2.0f, j1 - collection.size() * fontHeight - fontHeight - 3.0f, m - (l1 - 2.0f), fontHeight * (collection.size() + 1) + 4, 10f, new Color(21, 21, 21, 120).getRGB(), false);
-        RenderLib.drawGradientOutlinedRoundedRect(l1 - 2.0f, j1 - collection.size() * fontHeight - fontHeight - 3.0f, m - (l1 - 2.0f), (float)(fontHeight * (collection.size() + 1) + 4), 10f, 2.0f, new Color(175, 137, 201).getRGB(), new Color(113, 46, 157).getRGB(),  new Color(41, 57, 189).getRGB(), new Color(31, 12, 166).getRGB());
+        if (Configs.scoreboardOutline) RenderLib.drawGradientOutlinedRoundedRect(l1 - 2.0f, j1 - collection.size() * fontHeight - fontHeight - 3.0f, m - (l1 - 2.0f), (float)(fontHeight * (collection.size() + 1) + 4), 10f, 2.0f, new Color(175, 137, 201).getRGB(), new Color(113, 46, 157).getRGB(),  new Color(41, 57, 189).getRGB(), new Color(31, 12, 166).getRGB());
 
         int i3 = 0;
         for (final Score score2 : collection) {
@@ -75,11 +75,11 @@ public class ScoreBoard {
             if (Configs.hideLobby && matcher.find()) {
                 s2 = ChatFormatting.GRAY + matcher.group();
             }
-            if (s2.equals("mushroom")) FontUtil.productsans19.drawCenteredStringWithShadow(s2, l1 + width / 2.0f, k2, new Color(171, 120, 206).getRGB());
-            else FontUtil.productsans19.drawString(s2, l1, k2, 553648127);
+            if (s2.equals("mushroom")) FontUtil.font("productsans", 19).drawCenteredStringWithShadow(s2, l1 + width / 2.0f, k2, new Color(171, 120, 206).getRGB());
+            else FontUtil.font("productsans", 19).drawString(s2, l1, k2, 553648127);
             if (i3 == collection.size()) {
                 final String s3 = objective.getDisplayName();
-                FontUtil.productsans19.drawString(s3, l1 + width / 2.0f - FontUtil.productsans19.getStringWidth(s3) / 2.0f, k2 - fontHeight, Color.white.getRGB());
+                FontUtil.font("productsans", 19).drawString(s3, l1 + width / 2.0f - FontUtil.font("productsans", 19).getStringWidth(s3) / 2.0f, k2 - fontHeight, Color.white.getRGB());
             }
         }
         GlStateManager.color(1.0f, 1.0f, 1.0f);

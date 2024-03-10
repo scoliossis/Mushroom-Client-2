@@ -48,7 +48,7 @@ public class Scaffold {
     @SubscribeEvent
     public void onUpdate(final MotionUpdateEvent event) {
 
-        if (Configs.scaffold && !AntiVoid.isBlinking() && !Nofall.noFallBlinking) {
+        if (Configs.scaffold && !AntiVoid.isBlinking() && !Nofall.noFallBlinking && PlayerLib.inGame()) {
 
             final BlockPos pos = this.getClosestBlock();
 
@@ -104,7 +104,7 @@ public class Scaffold {
     @SubscribeEvent
     public void onUpdatePre(final MotionUpdateEvent.Pre event) {
         if (Configs.scaffold && Configs.tower) {
-            if (mc.gameSettings.keyBindJump.isKeyDown() && Configs.towermode != 0 && mc.thePlayer.onGround) {
+            if (mc.gameSettings.keyBindJump.isKeyDown() && mc.thePlayer.onGround) {
                 towering = true;
             }
             if (!mc.gameSettings.keyBindJump.isKeyDown() && towering) {
@@ -157,15 +157,14 @@ public class Scaffold {
     public void onMove(final MoveEvent event) {
         // holy shit wtf switch statements exist
         if (Configs.scaffold && Configs.scafsprintmode != 0 && inGame()) {
-            if (Configs.scafsprintmode != 1 && Configs.scafsprintmode != 4) mc.thePlayer.setSprinting(false);
-            if (Configs.scafsprintmode == 3) return;
+            if (Configs.scafsprintmode != 1) mc.thePlayer.setSprinting(false);
+            if (Configs.scafsprintmode == 3 || (Configs.scafsprintmode == 5 && mc.gameSettings.keyBindJump.isKeyDown())) return;
             double speed = 0.2575;
             if (Configs.scafsprintmode == 1) speed *= Configs.semisprintspeed;
-            if (Configs.scafsprintmode == 4) speed *= 0.30; // number from my ass
-            if (Configs.scafsprintmode == 5) speed *= 0.65; // ^^^^
+            if (Configs.scafsprintmode == 4 || Configs.scafsprintmode == 5) speed *= 0.30; // number from my ass
 
             if (mc.thePlayer.onGround || !Configs.tower) {
-                MovementLib.setMotion(speed, Configs.scaffoldJumpSprint, Configs.scaffoldJumpSpeed);
+                MovementLib.setMotion(speed, Configs.scaffoldJumpMutl, Configs.scaffoldJumpSpeed);
             }
         }
     }
@@ -178,7 +177,7 @@ public class Scaffold {
                 for (int z = -range; z <= range; z++) {
                     final Vec3 vec = new Vec3(x, y, z).addVector(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ);
                     final BlockPos pos2 = new BlockPos(vec);
-                    if (mc.theWorld.getBlockState(pos2).getBlock().isFullBlock()) {
+                    if (mc.theWorld.getBlockState(pos2).getBlock().isFullBlock() || !Configs.onlyFullBlocks) {
                         posList.add(vec);
                     }
                 }
@@ -189,7 +188,7 @@ public class Scaffold {
         }
 
         posList.sort(Comparator.comparingDouble(pos -> mc.thePlayer.getDistance(pos.xCoord, pos.yCoord, pos.zCoord)));
-        return new BlockPos((Vec3)posList.get(0));
+        return new BlockPos(posList.get(0));
     }
 
     private static MovingObjectPosition rayTrace(final Rotations rotation) {

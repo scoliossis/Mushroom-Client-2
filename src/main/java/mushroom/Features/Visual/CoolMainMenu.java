@@ -83,7 +83,7 @@ public class CoolMainMenu extends GuiScreen {
                 else welcomestring = "";
             }
 
-            FontUtil.productsans40.drawString(welcomestring, (((double) s.getScaledWidth() / 2))-(FontUtil.productsans40.getStringWidth("welcome")/2), (((float) s.getScaledHeight() / 2))-3, -1);
+            FontUtil.font("productsans", 40).drawString(welcomestring, (((double) s.getScaledWidth() / 2))-(FontUtil.font("productsans", 40).getStringWidth("welcome")/2), (((float) s.getScaledHeight() / 2))-3, -1);
 
         }
 
@@ -147,17 +147,17 @@ public class CoolMainMenu extends GuiScreen {
                     //this.drawGradientRect(thexinquestion, theyinquestion + (h * i) + (gap * i), thexinquestion + w, theyinquestion + h + (h * i) + (gap * i), fadeColors[0].getRGB(), fadeColors[1].getRGB());
                 }
 
-                FontUtil.comicsans19.drawCenteredStringWithShadow(buttons[i], thexinquestion + ((float) w / 2), theyinquestion + (h / 2) + (h * i) + (gap * i) - 3, -1);
+                FontUtil.font("productsans", 19).drawCenteredStringWithShadow(buttons[i], thexinquestion + ((float) w / 2), theyinquestion + (h / 2) + (h * i) + (gap * i) - 3, -1);
             }
         }
 
-        double xCoordOfText = (s.getScaledWidth() / 2d) - ((FontUtil.comicsans46.getStringWidth("mushroom client " + mushroom.VERSION))/2);
-        float yCoordOfText = ((s.getScaledHeight() / 2f)) - h - FontUtil.comicsans46.getHeight() - 20;
+        double xCoordOfText = (s.getScaledWidth() / 2d) - ((FontUtil.font("productsans", 46).getStringWidth("mushroom client " + mushroom.VERSION))/2);
+        float yCoordOfText = ((s.getScaledHeight() / 2f)) - h - FontUtil.font("productsans", 46).getHeight() - 20;
 
         // seperate lines so i can choose better colors than mc color codes
-        FontUtil.comicsans46.drawStringWithShadow("mushroom", xCoordOfText, yCoordOfText, new Color(203, 1, 98).getRGB());
-        FontUtil.comicsans46.drawStringWithShadow("client", xCoordOfText + FontUtil.comicsans46.getStringWidth("mushroom "), yCoordOfText, new Color(255, 241, 250).getRGB());
-        FontUtil.comicsans46.drawStringWithShadow(mushroom.VERSION, xCoordOfText + FontUtil.comicsans46.getStringWidth("mushroom client "), yCoordOfText, new Color(175, 225, 175).getRGB());
+        FontUtil.font("productsans", 46).drawStringWithShadow("mushroom", xCoordOfText, yCoordOfText, new Color(203, 1, 98).getRGB());
+        FontUtil.font("productsans", 46).drawStringWithShadow("client", xCoordOfText + FontUtil.font("productsans", 46).getStringWidth("mushroom "), yCoordOfText, new Color(255, 241, 250).getRGB());
+        FontUtil.font("productsans", 46).drawStringWithShadow(mushroom.VERSION, xCoordOfText + FontUtil.font("productsans", 46).getStringWidth("mushroom client "), yCoordOfText, new Color(175, 225, 175).getRGB());
 
         if (Configs.showchangelog) {
 
@@ -173,7 +173,7 @@ public class CoolMainMenu extends GuiScreen {
                     textColor = new Color(138, 9, 9);
                 }
 
-                FontUtil.productsans19.drawStringWithShadow(changelog[i], 5, 5 + ((FontUtil.productsans19.getHeight() + 5) * i), textColor.getRGB());
+                FontUtil.font("productsans", 17).drawStringWithShadow(changelog[i], 5, 5 + ((FontUtil.font("productsans", 17).getHeight() + 3) * i), textColor.getRGB());
             }
         }
 

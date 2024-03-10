@@ -32,6 +32,8 @@ public class Velocity {
 
                     // vanilla
                     case 0:
+                        // stupid velocity method. (the x slider no work...)
+                        // ik i should just edit the velocity packet
                         mc.thePlayer.motionX = xmot - (mc.thePlayer.motionX * horzontalmultiplier);
                         mc.thePlayer.motionY *= verticalmultiplier;
                         mc.thePlayer.motionZ = zmot - (mc.thePlayer.motionZ * horzontalmultiplier);
@@ -65,13 +67,13 @@ public class Velocity {
             }
             else if (Configs.velocitymode == 3 && mc.thePlayer.hurtTime == 10-Configs.velocityboostdelay && kb) {
                 kb=false;
-                mc.thePlayer.motionX *= (double) Configs.delayedboostspeed;
-                mc.thePlayer.motionZ *= (double) Configs.delayedboostspeed;
+                mc.thePlayer.motionX *= Configs.delayedboostspeed;
+                mc.thePlayer.motionZ *= Configs.delayedboostspeed;
             }
             else if (Configs.velocitymode == 4 && mc.thePlayer.hurtTime != 0) {
-                MovementLib.setMotion((double) Configs.velobhopspeed);
+                MovementLib.setMotion(Configs.velobhopspeed);
                 if (Configs.velotoggletimer) {
-                    TimerLib.setSpeed((float) Configs.velotimerspeed);
+                    TimerLib.setSpeed(Configs.velotimerspeed);
                 }
             }
             if (hurttime != mc.thePlayer.hurtTime && mc.thePlayer.hurtTime == 0 && Configs.velocitymode == 4 && Configs.velotoggletimer) {

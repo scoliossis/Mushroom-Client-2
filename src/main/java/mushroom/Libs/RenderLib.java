@@ -65,6 +65,19 @@ public class RenderLib {
         GlStateManager.disableBlend();
     }
 
+    public static void drawHead(int x, int y, int width, int height, AbstractClientPlayer target, float opacity) {
+        final ResourceLocation skin = target.getLocationSkin();
+        try {
+            mc.getTextureManager().bindTexture(skin);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glColor4f(1, 1, 1, opacity);
+            Gui.drawScaledCustomSizeModalRect(x, y, 8f, 8f, 8, 8, width, height, 64f, 64f);
+            GL11.glDisable(GL11.GL_BLEND);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void drawHead(int x, int y, int width, int height, AbstractClientPlayer target) {
         final ResourceLocation skin = target.getLocationSkin();
         try {
@@ -701,4 +714,48 @@ public class RenderLib {
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
     }
+
+
+    public static void enableGL2D() {
+        GL11.glDisable(2929);
+        GL11.glEnable(3042);
+        GL11.glDisable(3553);
+        GL11.glBlendFunc(770, 771);
+        GL11.glDepthMask(true);
+        GL11.glEnable(2848);
+        GL11.glHint(3154, 4354);
+        GL11.glHint(3155, 4354);
+    }
+    public static void disableGL2D() {
+        GL11.glEnable(3553);
+        GL11.glDisable(3042);
+        GL11.glEnable(2929);
+        GL11.glDisable(2848);
+        GL11.glHint(3154, 4352);
+        GL11.glHint(3155, 4352);
+    }
+
+    public static void draw3dCircle(final double x, final double y, final double z, final double height, final double width, final Color color) {
+        GL11.glPushMatrix();
+        GlStateManager.translate(x - mc.getRenderManager().viewerPosX, y - mc.getRenderManager().viewerPosY, z - mc.getRenderManager().viewerPosZ);
+        enableGL2D();
+        GL11.glShadeModel(7425);
+        GL11.glDisable(2884);
+        GL11.glLineWidth(3.0f);
+        GL11.glHint(3154, 4354);
+        GL11.glBegin(5);
+
+        for (int i = 0; i <= 120; i++) {
+            GL11.glColor4f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, color.getAlpha() / 255.0f);
+            GL11.glVertex3d(Math.cos(i * 3.141592653589793 / 60.0) * width, 0, Math.sin(i * 3.141592653589793 / 60.0) * width);
+            GL11.glVertex3d(Math.cos(i * 3.141592653589793 / 60.0) * width, height, Math.sin(i * 3.141592653589793 / 60.0) * width);
+        }
+
+        GL11.glEnd();
+        GL11.glShadeModel(7424);
+        GL11.glEnable(2884);
+        disableGL2D();
+        GL11.glPopMatrix();
+    }
+
 }

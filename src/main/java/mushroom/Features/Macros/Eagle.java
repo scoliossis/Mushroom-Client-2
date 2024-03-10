@@ -94,7 +94,7 @@ public class Eagle {
         if (PlayerLib.inGame() && Configs.showifeagletriggered && eagletriggered()) {
             ScaledResolution s = new ScaledResolution(Minecraft.getMinecraft());
 
-            FontUtil.productsans19.drawStringWithShadow("Eagle triggered", ((double) s.getScaledWidth() / 2) - (FontUtil.productsans19.getStringWidth("Eagle triggered") / 2), ((float) s.getScaledHeight() / 2), -1);
+            FontUtil.font("productsans", 19).drawStringWithShadow("Eagle triggered", ((double) s.getScaledWidth() / 2) - (FontUtil.font("productsans", 19).getStringWidth("Eagle triggered") / 2), ((float) s.getScaledHeight() / 2), -1);
         }
     }
 

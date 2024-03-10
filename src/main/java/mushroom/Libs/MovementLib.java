@@ -139,6 +139,27 @@ public class MovementLib {
         }
     }
 
+    public static float getDirYaw() {
+        float yaw = (Killaura.target != null && Configs.moveFixAura) ? RotationUtils.getRotations(Killaura.target).getYaw() : mc.thePlayer.rotationYaw;
+        if (mc.gameSettings.keyBindBack.isKeyDown()) {
+            yaw += 180.0f;
+        }
+        float forward = 1.0f;
+        if (mc.gameSettings.keyBindBack.isKeyDown()) {
+            forward = -0.5f;
+        }
+        else if (mc.gameSettings.keyBindForward.isKeyDown()) {
+            forward = 0.5f;
+        }
+        if (mc.gameSettings.keyBindLeft.isKeyDown()) {
+            yaw -= 90.0f * forward;
+        }
+        if (mc.gameSettings.keyBindRight.isKeyDown()) {
+            yaw += 90.0f * forward;
+        }
+        return yaw;
+    }
+
     public static float getYaw() {
         float yaw = (Killaura.target != null && Configs.moveFixAura) ? RotationUtils.getRotations(Killaura.target).getYaw() : mc.thePlayer.rotationYaw;
         if (mc.thePlayer.moveForward < 0.0f) {

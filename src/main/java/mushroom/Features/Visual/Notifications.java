@@ -58,10 +58,10 @@ public class Notifications {
 
                     drawGradientRect(0, (int) ((s.getScaledWidth()) - width), (s.getScaledHeight()) - (30 * (i / 3 + 1)) - 20 - i / 3, (s.getScaledWidth()), ((s.getScaledHeight()) - (30 * (i / 3 + 1)) - 20 - i / 3) + 30, new Color(22, 0, 22, 150).getRGB(), new Color(22, 0, 22, 150).getRGB());
                     drawGradientRect(0, (int) ((int) ((s.getScaledWidth()) - width)+(200-minus)), ((s.getScaledHeight()) - (30 * (i / 3 + 1)) - 20 - i / 3) + 27, (s.getScaledWidth()), ((s.getScaledHeight()) - (30 * (i / 3 + 1)) - 20 - i / 3) + 30, new Color(150, 0, 255, 200).getRGB(), new Color(150, 0, 255, 200).getRGB());
-                    FontUtil.comicsans23.drawStringWithShadow(popups.get(i), (s.getScaledWidth()) - width + 5, (s.getScaledHeight()) - (30 * (i / 3f + 1) - 5) - 20 - i / 3f, new Color(255, 0, 120).getRGB());
-                    if (popups.get(i + 1).contains("enabled")) FontUtil.comicsans19.drawStringWithShadow(popups.get(i + 1), (s.getScaledWidth()) - width + 5, (s.getScaledHeight()) - (30 * (i / 3f + 1) - 15) - 20 - i / 3f, new Color(120, 255, 120).getRGB());
-                    else if (popups.get(i + 1).contains("disabled")) FontUtil.comicsans19.drawStringWithShadow(popups.get(i + 1), (s.getScaledWidth()) - width + 5, (s.getScaledHeight()) - (30 * (i / 3f + 1) - 15) - 20 - i / 3f, new Color(255, 120, 120).getRGB());
-                    else FontUtil.comicsans19.drawStringWithShadow(popups.get(i + 1), (s.getScaledWidth()) - width + 5, (s.getScaledHeight()) - (30 * (i / 3f + 1) - 15) - 20 - i / 3f, new Color(120, 120, 255).getRGB());
+                    FontUtil.font("productsans", 23).drawStringWithShadow(popups.get(i), (s.getScaledWidth()) - width + 5, (s.getScaledHeight()) - (30 * (i / 3f + 1) - 5) - 20 - i / 3f, new Color(255, 0, 120).getRGB());
+                    if (popups.get(i + 1).contains("enabled")) FontUtil.font("productsans", 19).drawStringWithShadow(popups.get(i + 1), (s.getScaledWidth()) - width + 5, (s.getScaledHeight()) - (30 * (i / 3f + 1) - 15) - 20 - i / 3f, new Color(120, 255, 120).getRGB());
+                    else if (popups.get(i + 1).contains("disabled")) FontUtil.font("productsans", 19).drawStringWithShadow(popups.get(i + 1), (s.getScaledWidth()) - width + 5, (s.getScaledHeight()) - (30 * (i / 3f + 1) - 15) - 20 - i / 3f, new Color(255, 120, 120).getRGB());
+                    else FontUtil.font("productsans", 19).drawStringWithShadow(popups.get(i + 1), (s.getScaledWidth()) - width + 5, (s.getScaledHeight()) - (30 * (i / 3f + 1) - 15) - 20 - i / 3f, new Color(120, 120, 255).getRGB());
                 }
 
             }

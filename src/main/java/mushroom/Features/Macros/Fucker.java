@@ -42,7 +42,7 @@ public class Fucker {
             blocksToMine.clear();
             mining = false;
         }
-        if (blockMining != null && Configs.fuckerRotations) {
+        if (blockMining != null && Configs.fuckerRotations && (!Configs.killaura || Killaura.target == null) && !Configs.scaffold) {
             Rotations rot = RotationUtils.getLimitedRotation(RotationUtils.getLastReportedRotation(), RotationUtils.getRotations(blockMining.getX(), blockMining.getY(), blockMining.getZ()), (Configs.fuckerRotationsSpeed-20) + Math.abs((Configs.fuckerRotationsSpeed+20) - (Configs.fuckerRotationsSpeed-20)) * new Random().nextFloat());
             event.setRotation(rot);
 

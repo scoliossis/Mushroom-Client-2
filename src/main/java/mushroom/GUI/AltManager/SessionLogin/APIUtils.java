@@ -26,38 +26,7 @@ public class APIUtils {
         String UUID = jsonObject.get("id").getAsString();
         return new String[]{IGN, UUID};
     }
-    public static String tokenFromMicrosoft(String code) throws IOException {
-        String[] xstsAndHash = xstsAndHashFromMicrosoft(code);
-        String xstsToken = xstsAndHash[0];
-        String userHash = xstsAndHash[1];
-        return tokenFromXsts(xstsToken, userHash);
-    }
-    public static String[] xstsAndHashFromMicrosoft(String code) throws IOException {
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost request = new HttpPost("https://xsts.auth.xboxlive.com/xsts/authorize");
-        request.setHeader("Content-Type", "application/json");
-        String requestBody = String.format("{\"Properties\":{\"SandboxId\":\"RETAIL\",\"UserTokens\":[\"%s\"]},\"RelyingParty\":\"rp://api.minecraftservices.com/\",\"TokenType\":\"JWT\"}", code);
-        request.setEntity(new StringEntity(requestBody));
-        CloseableHttpResponse response = client.execute(request);
-        String jsonString = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-        JsonObject jsonObject = new JsonParser().parse(jsonString).getAsJsonObject();
-        String userHash = jsonObject.get("DisplayClaims").getAsJsonObject().get("xui").getAsJsonArray().get(0).getAsJsonObject().get("uhs").getAsString();
-        String xstsToken = jsonObject.get("Token").getAsString();
-        return new String[]{xstsToken, userHash};
-    }
-    public static String tokenFromXsts(String code, String userHash) throws IOException {
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost request = new HttpPost("https://api.minecraftservices.com/authentication/login_with_xbox");
-        request.setHeader("Content-Type", "application/json");
-        String requestBody = String.format("{ \"identityToken\": \"XBL3.0 x=%s;%s\"}", userHash, code);
-        request.setEntity(new StringEntity(requestBody));
-        CloseableHttpResponse response = client.execute(request);
-        String jsonString = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-        JsonObject jsonObject = new JsonParser().parse(jsonString).getAsJsonObject();
-        String mcToken = jsonObject.get("access_token").getAsString();
-        return mcToken;
-    }
-    public static Boolean validateSession(String token) throws IOException {
+    public static Boolean validateSession(String token) {
         try {
             String[] profileInfo = getProfileInfo(token);
             String IGN = profileInfo[0];

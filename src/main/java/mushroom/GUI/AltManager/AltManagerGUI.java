@@ -1,6 +1,8 @@
 package mushroom.GUI.AltManager;
 
+import com.google.gson.JsonObject;
 import mushroom.Features.Visual.CoolMainMenu;
+import mushroom.GUI.AltManager.Microsoft.Cookies;
 import mushroom.GUI.AltManager.SessionLogin.APIUtils;
 import mushroom.GUI.AltManager.SessionLogin.SessionChanger;
 import mushroom.GUI.ClickGUI;
@@ -10,27 +12,34 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Session;
+import okhttp3.OkHttpClient;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Consumer;
 
+import static mushroom.GUI.AltManager.Microsoft.Cookies.unpack;
 import static mushroom.GUI.ClickGUI.burp;
 import static mushroom.Libs.PlayerLib.mc;
 import static mushroom.mushroom.sillyfolderpath;
 
 public class AltManagerGUI extends GuiScreen {
 
-    String[] buttons = {"session id", "cracked", "change name", "change skin"};
+    String[] buttons = {"session id", "cracked", "cookies"};
+    String[] changers = {"change name", "change skin"};
     boolean sessionlogin = false;
+    boolean microsoftLogin = false;
     boolean crackedlogin = false;
     boolean changename = false;
     boolean changeskin = false;
@@ -48,58 +57,134 @@ public class AltManagerGUI extends GuiScreen {
 
     public int pp = 0;
 
-    String stat = "";
     String token = "";
     public static String specifictoken;
 
+    boolean lastLeftClicked = false;
+
     public static String status = "";
+
+    String prevstat = "";
+
+    long lastTime = 0;
     @Override
     public void drawScreen(int mx, int my, float var3) {
 
         ScaledResolution s = new ScaledResolution(Minecraft.getMinecraft());
 
         ClickGUI.drawTexture(new ResourceLocation("mushroom/altmanager/background.png"), 0, 0, s.getScaledWidth(), s.getScaledHeight());
-        FontUtil.comicsans35.drawCenteredStringWithShadow("alts", (float) (((s.getScaledWidth())/2)), 10, -1);
-        if (status != "") {
-            if (stat != status) pp=0;
-            stat = status;
-            FontUtil.comicsans19.drawCenteredStringWithShadow(status, (float) (((s.getScaledWidth())/2)), 35, -1);
-            pp++;
-            if (pp > 75) {
-                pp = 0;
+        FontUtil.font("productsans", 35).drawCenteredStringWithShadow("alts", (float) (((s.getScaledWidth())/2)), 10, -1);
+        if (!Objects.equals(status, "")) {
+            if (!Objects.equals(prevstat, status)) {
+                lastTime = System.currentTimeMillis();
+            }
+
+            FontUtil.font("productsans", 19).drawCenteredStringWithShadow(status, (float) (((s.getScaledWidth())/2)), 35, -1);
+            if (System.currentTimeMillis() - lastTime > 1000) {
                 status = "";
             }
         }
+        prevstat = status;
 
-        FontUtil.productsans35.drawCenteredStringWithShadow("login", x+(w/2f), 10, -1);
-        FontUtil.productsans19.drawCenteredStringWithShadow("from clipboard", x+(w/2f), y/2f+15, -1);
-        FontUtil.productsans19.drawCenteredStringWithShadow("changer", x+(w/2f), (y + (h*2) + (gap*2))+7, -1);
+        FontUtil.font("productsans", 35).drawCenteredStringWithShadow("login", x+(w/2f), 10, -1);
+        FontUtil.font("productsans", 19).drawCenteredStringWithShadow("from clipboard", x+(w/2f), y/2f+15, -1);
 
 
         this.drawGradientRect(0, 0, (x*2)+w, s.getScaledHeight(), new Color(23,23,23, 50).getRGB(), new Color(23,23,23, 50).getRGB());
 
         newi = 0;
 
-        for (int i = 0; i < buttons.length; i++) {
+        for (int i = 0; i < buttons.length + changers.length; i++) {
             int thexinquestion = x;
             int theyinquestion = y + (h*i) + (gap*i);
-            if (i > 1) theyinquestion+=17;
+            String draw;
+            if (i >= buttons.length) {
+                if (i == buttons.length)
+                    FontUtil.font("productsans", 19).drawCenteredStringWithShadow("changer", x+(w/2f), theyinquestion + 5, -1);
+                theyinquestion += 17;
+                draw = changers[i-buttons.length];
+            }
+            else draw = buttons[i];
 
 
             if (mx >= thexinquestion && mx <= thexinquestion + w && my >= theyinquestion && my <= theyinquestion + h) {
                 this.drawGradientRect(thexinquestion, theyinquestion, thexinquestion + w, theyinquestion + h, new Color(10,10,10).getRGB(), new Color(10,10,10).getRGB());
-                if (Mouse.isButtonDown(0)) {
-                    if (i == 0) sessionlogin = true;
-                    if (i == 1) crackedlogin = true;
 
-                    if (i == 2) changename = true;
-                    if (i == 3) changeskin = true;
+                if (i == 2) FontUtil.font("productsans", 19).drawString("copy txt / zip file path of cookie to clipboard", s.getScaledWidth() - FontUtil.font("productsans", 19).getStringWidth("copy txt / zip file path of cookie to clipboard") - 5, s.getScaledHeight() - FontUtil.font("productsans", 19).getHeight() - 5, -1);
+
+                if (Mouse.isButtonDown(0) && !lastLeftClicked) {
+                    switch (i) {
+                        case 0:
+                            sessionlogin = true;
+                            break;
+                        case 1:
+                            crackedlogin = true;
+                            break;
+                        case 2:
+
+                            status = "§alogging in with cookies!!";
+
+                            String clipboardText;
+
+                            try {
+                                clipboardText = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+                            } catch (IOException | UnsupportedFlavorException e) {
+                                throw new RuntimeException(e);
+                            }
+
+                            if (clipboardText != null) {
+
+                                clipboardText = clipboardText.replaceAll("\"", "");
+                                if (new File(clipboardText).exists()) {
+
+                                    Cookies.path = clipboardText;
+
+
+                                    if (clipboardText.endsWith(".zip")) {
+                                        try {
+                                            String newFileLoc = clipboardText.substring(0, clipboardText.lastIndexOf("\\")) + "\\MushroomCookies";
+                                            System.out.println(newFileLoc);
+                                            unpack(clipboardText, new File(newFileLoc));
+
+                                            if (Files.isDirectory(Paths.get(newFileLoc))) {
+
+                                                for (File file : Objects.requireNonNull(Paths.get(newFileLoc).toFile().listFiles())) {
+                                                    System.out.println(file.getPath());
+                                                    Cookies.path = file.getPath();
+
+                                                    Cookies.loginWithCookie();
+                                                }
+                                            }
+                                        } catch (IOException e) {
+                                            status = "§4failed to extract zip :(";
+                                            throw new RuntimeException(e);
+                                        }
+                                    }
+
+                                    Cookies.loginWithCookie();
+                                }
+                                else {
+                                    AltManagerGUI.status = "§2epic fail :skull: (invalid file path)";
+                                }
+                            }
+                            else {
+                                status = "§4invalid clipboard >:(";
+                            }
+
+                            break;
+                        case 3:
+                            changename = true;
+                            break;
+                        case 4:
+                            changeskin = true;
+                    }
+
                 }
             }
             else {
                 this.drawGradientRect(thexinquestion, theyinquestion, thexinquestion + w, theyinquestion + h, new Color(23,23,23).getRGB(), new Color(23,23,23).getRGB());
             }
-            FontUtil.productsans19.drawCenteredStringWithShadow(buttons[i], thexinquestion + (w / 2), theyinquestion + (h / 2)-3, -1);
+            FontUtil.font("productsans", 19).drawCenteredStringWithShadow(draw, thexinquestion + (w / 2f), theyinquestion + (h / 2f)-3, -1);
 
         }
 
@@ -130,13 +215,13 @@ public class AltManagerGUI extends GuiScreen {
                         else {
                             token="";
                             System.out.println("nuh uh uh (token no valid)");
-                            status = "§4invalid token";
+                            status = "§4nuh uh uh (token no valid)";
                         }
                     }
                     else {
                         token="";
                         System.out.println("nuh uh uh clipboard bad");
-                        status = "§4invalid token";
+                        status = "§4nuh uh uh clipboard bad";
                     }
                 } catch (Exception e) {
                     token="";
@@ -145,6 +230,9 @@ public class AltManagerGUI extends GuiScreen {
                     System.out.println(e);
 
                 }
+            }
+            else {
+                status = "§4clipboard is empty";
             }
         }
 
@@ -180,10 +268,10 @@ public class AltManagerGUI extends GuiScreen {
                     status = "§4are you SURE you want to change username of " + nametochange + " to " + newusername + "?";
 
                     drawGradientRect(s.getScaledWidth() / 2 - 97, s.getScaledHeight() - 30, s.getScaledWidth() / 2 - 3,s.getScaledHeight() - 10, new Color(103, 248, 0).getRGB(), new Color(194, 231, 27).getRGB());
-                    FontUtil.productsans35.drawCenteredStringWithShadow("yes", (float) s.getScaledWidth() / 2 - 47, (float) s.getScaledHeight() - 28, -1);
+                    FontUtil.font("productsans", 35).drawCenteredStringWithShadow("yes", (float) s.getScaledWidth() / 2 - 47, (float) s.getScaledHeight() - 28, -1);
 
                     drawGradientRect(s.getScaledWidth() / 2 + 3, s.getScaledHeight() - 30, s.getScaledWidth() / 2 + 97,s.getScaledHeight() - 10, new Color(255, 0, 0).getRGB(), new Color(245, 11, 63).getRGB());
-                    FontUtil.productsans35.drawCenteredStringWithShadow("no", (float) s.getScaledWidth() / 2 + 47, (float) s.getScaledHeight() - 28, -1);
+                    FontUtil.font("productsans", 35).drawCenteredStringWithShadow("no", (float) s.getScaledWidth() / 2 + 47, (float) s.getScaledHeight() - 28, -1);
 
                     if (mx >= s.getScaledWidth() / 2 - 97 && mx <= s.getScaledWidth() / 2 - 3 && my >= s.getScaledHeight() - 30 && my <= s.getScaledHeight() - 10) {
                         if (Mouse.isButtonDown(0)) {
@@ -281,27 +369,36 @@ public class AltManagerGUI extends GuiScreen {
                     newi++;
                     int bp = newi;
 
-                    drawRect((x * 2 + w) + 20 + (w * bp) + (5 * bp), y, (x * 2 + w) + 20 + w + (w * bp) + (5 * bp), y + h, new Color(23, 23, 23, 100).getRGB());
+                    int xCoord = (x * 2 + w) + 20 + (w * bp) + (5 * bp);
+                    int many = (xCoord+(w/2)) / s.getScaledWidth();
 
-                    ClickGUI.drawTexture(new ResourceLocation("mushroom/altmanager/remove.png"), (x * 2 + w) + 20 + w + (w * bp) + (5 * bp)-15, y + 2, 10, 10);
+                    xCoord -= (((w * bp) + (5 * bp))) * many;
+
+                    int yCoord = ((many * (h+5)) + y);
+
+                    drawRect(xCoord, yCoord, xCoord + w, yCoord + h, new Color(23, 23, 23, 100).getRGB());
+
+                    ClickGUI.drawTexture(new ResourceLocation("mushroom/altmanager/remove.png"), xCoord + w - 15, yCoord + 2, 10, 10);
 
                     specifictoken = validsessplit[i].split("\\|")[1].replace("user:", "").replace(" ", "");
                     String specificusername = validsessplit[i].split("\\|")[0].replace(" ", "");
 
-                    if (mx >= (x * 2 + w) + 20 + w + (w * bp) + (5 * bp)-15 && mx <= (x * 2 + w) + 20 + w + (w * bp) + (5 * bp)-15 + 10 && my >= y + 2 && my <= y + 15) {
+                    if (mx >= xCoord-15 && mx <= xCoord - 5 && my >= yCoord + 2 && my <= yCoord + 15) {
                         if (Mouse.isButtonDown(0)) {
                             if (Objects.equals(mc.getSession().getProfile().getName(), specificusername)) SessionChanger.setSession(new Session(mushroom.mainuser, mushroom.mainuuid, mushroom.mainssid, "mojang"));
-                            mushroom.validsessions = mushroom.validsessions.replace("user:" + specificusername + "|" + specifictoken, "");
+                            System.out.println(specifictoken);
+                            mushroom.validsessions = mushroom.validsessions.replace("user:" + specificusername + "|" + specifictoken, " ");
+
                             status = "§4removed " + specificusername + " as a session id";
                         }
                     }
 
-                    if (mc.getSession().getProfile().getName().equals(specificusername)) FontUtil.comicsans10.drawStringWithShadow("logged in", (x * 2 + w) + 20 + (w * bp) + (5 * bp) + w - FontUtil.comicsans10.getStringWidth("logged in") - 5, y + 16, new Color(175, 225, 175).getRGB());
-                    FontUtil.comicsans19.drawStringWithShadow(specificusername, (x * 2 + w) + 20 + 5 + (w * bp) + (5 * bp), y + 5, new Color(255, 241, 250).getRGB());
-                    FontUtil.comicsans10.drawStringWithShadow("session", (x * 2 + w) + 20 + 5 + (w * bp) + (5 * bp), y + 16, new Color(203, 1, 98).getRGB());
+                    if (mc.getSession().getProfile().getName().equals(specificusername)) FontUtil.font("productsans", 16).drawStringWithShadow("logged in", xCoord + w - FontUtil.font("productsans", 16).getStringWidth("logged in") - 5, yCoord + 16, new Color(175, 225, 175).getRGB());
+                    FontUtil.font("productsans", 19).drawStringWithShadow(specificusername, xCoord + 5, yCoord + 5, new Color(255, 241, 250).getRGB());
+                    FontUtil.font("productsans", 16).drawStringWithShadow("session", xCoord + 5, yCoord + 16, new Color(203, 1, 98).getRGB());
 
 
-                    if (!Objects.equals(mc.getSession().getProfile().getName(), specificusername) && mx >= (x * 2 + w) + 20 + (w * i) + (5 * i) && mx <= (x * 2 + w) + 20 + w + (w * bp) + (5 * bp) && my >= y && my <= y + h) {
+                    if (!Objects.equals(mc.getSession().getProfile().getName(), specificusername) && mx >= xCoord && mx <= xCoord + w && my >= yCoord && my <= yCoord + h) {
                         if (Mouse.isButtonDown(0)) {
                             if (mushroom.validsessions.contains(specifictoken)) {
 
@@ -326,11 +423,12 @@ public class AltManagerGUI extends GuiScreen {
 
         drawRect((x*2+w)+20, y, (x*2+w)+20+w, y+h, new Color(23,23,23,100).getRGB());
 
-        FontUtil.comicsans19.drawStringWithShadow(mushroom.mainuser, (x * 2 + w) + 20 + 5, y + 5, new Color(255, 241, 250).getRGB());
-        FontUtil.comicsans10.drawStringWithShadow("main", (x * 2 + w) + 20 + 5, y + 16, new Color(203, 1, 98).getRGB());
+        FontUtil.font("productsans", 19).drawStringWithShadow(mushroom.mainuser, (x * 2 + w) + 20 + 5, y + 5, new Color(255, 241, 250).getRGB());
+        FontUtil.font("productsans", 16).drawStringWithShadow("main", (x * 2 + w) + 20 + 5, y + 16, new Color(203, 1, 98).getRGB());
 
-        if (mc.getSession().getProfile().getName().equals(mushroom.mainuser)) FontUtil.comicsans10.drawStringWithShadow("logged in", (x * 2 + w) + 20 + w - FontUtil.comicsans10.getStringWidth("logged in") - 5, y + 16, new Color(175, 225, 175).getRGB());
+        if (mc.getSession().getProfile().getName().equals(mushroom.mainuser)) FontUtil.font("productsans", 16).drawStringWithShadow("logged in", (x * 2 + w) + 20 + w - FontUtil.font("productsans", 16).getStringWidth("logged in") - 5, y + 16, new Color(175, 225, 175).getRGB());
 
+        lastLeftClicked = Mouse.isButtonDown(0);
     }
 
     char char1 = '\u0000';

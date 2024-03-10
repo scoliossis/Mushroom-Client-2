@@ -26,7 +26,6 @@ public class ChatLib {
             } catch (Exception var3) {
                 var3.printStackTrace();
             }
-
         }
     }
 
