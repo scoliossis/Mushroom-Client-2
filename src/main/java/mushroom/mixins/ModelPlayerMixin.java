@@ -75,7 +75,7 @@ public class ModelPlayerMixin extends ModelBiped {
 
 
             GlStateManager.pushMatrix();
-            if (entityIn == mc.thePlayer || Configs.newEveryoneModel) {
+            if ((entityIn == mc.thePlayer && Configs.newMeModel) || (entityIn != mc.thePlayer && Configs.newEveryoneModel)) {
                 this.bipedHead.rotateAngleY = netHeadYaw * 0.017453292F;
                 this.bipedHead.rotateAngleX = headPitch * 0.017453292F;
                 this.bipedBody.rotateAngleY = 0.0F;

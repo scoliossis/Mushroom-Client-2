@@ -50,7 +50,7 @@ public class PlayerSPMixin {
     @Inject(method = { "onLivingUpdate" }, at = { @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;onLivingUpdate()V") }, cancellable = true)
     public void onLivingUpdate(final CallbackInfo ci) {
 
-        if (((Configs.sprint && (Configs.sprintmode == 1 || Configs.sprintmode == 2)) || (Configs.scaffold && Configs.scafsprintmode == 4)) && !(Configs.scaffold && Configs.scafsprintmode == 5) && !mc.thePlayer.isUsingItem()) {
+        if (((Configs.sprint && (Configs.sprintmode == 1)) || (Configs.scaffold && (Configs.scafsprintmode == 4 || Configs.scafsprintmode == 5))) && !mc.thePlayer.isUsingItem()) {
             if (!MovementLib.isMoving() || mc.thePlayer.isSneaking() || (mc.thePlayer.getFoodStats().getFoodLevel() <= 6.0f && !mc.thePlayer.capabilities.allowFlying)) {
                 if (mc.thePlayer.isSprinting()) {
                     mc.thePlayer.setSprinting(false);
@@ -72,20 +72,16 @@ public class PlayerSPMixin {
             if (mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) action = EnumAction.BLOCK;
             else action = Minecraft.getMinecraft().thePlayer.getHeldItem().getItem().getItemUseAction(Minecraft.getMinecraft().thePlayer.getHeldItem());
 
-            if (Configs.noslowmode == 1 && Mouse.isButtonDown(0)) {
-                Minecraft.getMinecraft().thePlayer.setSprinting(false);
-                wasdown=true;
-            }
-            else if (Configs.noslowmode == 1 && !Mouse.isButtonDown(0) && wasdown) {
-                Minecraft.getMinecraft().thePlayer.setSprinting(true);
-                wasdown=false;
-            }
-
             float sworrdSped = Configs.noslowswordspeed;
             if ((Configs.killaura && Killaura.target != null && (Killaura.isBlocking || Configs.autoblockmode == 5 || Configs.autoblockmode == 6) && Configs.autoblockSlowDown && mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword)) sworrdSped = 0.3f;
 
+
             float bowSped = Configs.noslowbowspeed;
             float drrinkSped = Configs.nosloweatspeed;
+
+            if (!Configs.Swordnoslow) sworrdSped = 0.3f;
+            if (!Configs.Bownoslow) bowSped = 0.3f;
+            if (!Configs.Foodnoslow) drrinkSped = 0.3f;
 
             if (action == EnumAction.BLOCK) {
                 Minecraft.getMinecraft().thePlayer.movementInput.moveForward *= sworrdSped;

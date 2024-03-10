@@ -41,20 +41,18 @@ import static mushroom.Libs.PlayerLib.mc;
 public class mushroom extends CommandBase {
 
     // todo:
-    // port to java:
+    // port to java from old version:
     // trigger bot
     // tpaura (maybe)
     // chest esp
     // skull esp (maybe)
     // derp
-    // trail, uhhh full recode of this one ig
-    // kapow ^^^^ it looked ugly before
+    // kapow it looked ugly before
     // inv walk, find bypass for hypixel too!!
     // freeze... wtf is this for
     // ghost blocks, I LOVE G KEY
     // high jump <- boringo
     // spider - boring
-    // strafe - ill add as speed mode
     // target strafe, uhhh maybe ill readd after noslow
     // step - fuck this, (idk ill find a bypass)
     // sneak - not finding a bypass for this sadly.
@@ -68,30 +66,29 @@ public class mushroom extends CommandBase {
 
     // other
     // add freecam
-    // add delaybeforesteal on chest stealer
-    // custom scoreboard
     // discord rpc (idrk how to do this)
-    // trail
     // trajectory's
     // cool font chat
     // auto pot / soup
     // autoplay
     // play statistics or smth
-    // fix fonts to be easier to use
-    // add client font options
-    // store target hud pos, and other stuff
-
+    // microsoft login
+    // fix scoreboard not render special chars
+    // fix velocity
+    // add backtrack
+    // add fakelag maybe
 
     /*
     as of 26/02/24 it has for hypixel:
     - killaura
-    - bad autoblock
+    - alright autoblock
     - criticals (bad and sometimes self damages...)
     - sprint jump scaffold
-    - "noslow" (doesnt work w autoblock or food or bows)
-    - blink nofall ig? (toggle blink and groundspoof before dropping of block)
+    - "noslow" (doesnt work w autoblock or food or bows (FIRE IK)!!)
+    - blink nofall
     - omnisprint (u dont need a bypass for this)
     - ground strafe speed
+    - pro visuals!!!
      */
 
     public static final String MODID = "mushroom";
@@ -118,13 +115,18 @@ public class mushroom extends CommandBase {
             "#Fixed Array List\n" +
             "#Fixed Scaffold + Killaura Rotations\n" +
             "#Fixed No Fall\n" +
-            "#Fixed Backtrack\n" +
+            // no not really... (later..)
+            //"#Fixed Backtrack\n" +
             "#Fixed Reach\n" +
             "#Fixed Fastplace\n" +
             "#Fixed Fastbreak\n" +
             "#Fixed Nuker\n" +
             "#Fixed No Hitboxes\n" +
+            "#Fixed Trail\n" +
+            "#Fixed Criticals\n" +
+            "#Fixed Tower\n" +
             "#Renamed Nuker to Fucker\n" +
+            "#Improved Target HUD\n" +
             "\n" +
             "+Added Blink antivoid\n" +
             "+Added Blink\n" +
@@ -134,11 +136,19 @@ public class mushroom extends CommandBase {
             "+Added Chams\n" +
             "+Added Nametags + Health Bar\n" +
             "+Added Animations\n" +
-            "+Added sims crystal\n" +
+            "+Added Sims Crystal\n" +
             "+Added Animations\n" +
             "+Added Model Modifier\n" +
             "+Added Sprint Jump Scaffold\n" +
             "+Added Capes\n" +
+            "+Added Jump Circles\n" +
+            "+Added Session ID login\n" +
+            "+Added Skin / Name Changer\n" +
+            "+Added Bed Plates\n" +
+            "+Added Custom Scoreboard\n" +
+            "+Added More Fonts\n" +
+            "+Added IRC\n" +
+            "+Added Hypixel Bypasses\n" +
             "\n" +
             "-Removed Not Enough Spanish\n" +
             "-Removed Chat Macros Tab\n" +
@@ -146,21 +156,20 @@ public class mushroom extends CommandBase {
             "-Removed CPS Multiplier\n" +
             "-Removed Sumo Fences\n" +
             "-Removed Strafe Module\n" +
+            "-Removed Lots Of Random Modules\n" +
             "-Removed Skyblock Features";
 
+
     @EventHandler
-    public void preInit(FMLPreInitializationEvent var1) throws IOException {
+    public void preInit(FMLPreInitializationEvent var1) {
         if (!new File(sillyfolderpath).exists()) {
             new File(sillyfolderpath).mkdirs();
         }
-        if (!new File(sillyfolderpath + "/configs").exists()) {
-            new File(sillyfolderpath + "/configs").mkdirs();
-        }
-        if (!new File(sillyfolderpath + "/accounts").exists()) {
-            new File(sillyfolderpath + "/accounts").mkdirs();
-        }
+        if (!new File(sillyfolderpath + "/configs").exists()) new File(sillyfolderpath + "/configs").mkdirs();
+        if (!new File(sillyfolderpath + "/accounts").exists()) new File(sillyfolderpath + "/accounts").mkdirs();
+        if (!new File(sillyfolderpath + "/extras").exists()) new File(sillyfolderpath + "/extras").mkdirs();
 
-        Display.setTitle("mushroom client 4.0");
+        Display.setTitle("mushroom client " + VERSION);
 
         ClientCommandHandler.instance.registerCommand(new mushroom());
         ClientCommandHandler.instance.registerCommand(new Config());
@@ -199,6 +208,10 @@ public class mushroom extends CommandBase {
         MinecraftForge.EVENT_BUS.register(new Criticals());
         MinecraftForge.EVENT_BUS.register(new HUD());
         MinecraftForge.EVENT_BUS.register(new ScoreBoard());
+        MinecraftForge.EVENT_BUS.register(new IRC());
+        MinecraftForge.EVENT_BUS.register(new HealthBars());
+        MinecraftForge.EVENT_BUS.register(new JumpCircles());
+        MinecraftForge.EVENT_BUS.register(new Trail());
 
         if (Files.exists(Paths.get(sillyfolderpath + "/accounts/sessionids.cfg"))) {
             validsessions = ReadFile(sillyfolderpath + "/accounts/sessionids.cfg");
@@ -224,8 +237,9 @@ public class mushroom extends CommandBase {
 
     public static GuiScreen guiToOpen = null;
 
-    public static int arraycolor = 0;
-    public static Boolean godown = false;
+    public static boolean loadedExtras = false;
+    public static String selectedCat = "Combat";
+
 
 
     @SubscribeEvent
@@ -233,6 +247,20 @@ public class mushroom extends CommandBase {
         if (guiToOpen != null) {
             Minecraft.getMinecraft().displayGuiScreen(guiToOpen);
             guiToOpen = null;
+        }
+
+
+        if (!loadedExtras) {
+            try {
+                if (!new File(sillyfolderpath + "/extras/sillys.scolio").exists()) new File(sillyfolderpath + "/extras/sillys.scolio").createNewFile();
+                else {
+                    String fileText = ReadFile(sillyfolderpath + "/extras/sillys.scolio");
+                    if (fileText.contains("targetHudX:")) TargetHud.targetHudX = Integer.parseInt(fileText.split("targetHudX:")[1].split(" ")[0]);
+                    if (fileText.contains("targetHudY:")) TargetHud.targetHudY = Integer.parseInt(fileText.split("targetHudY:")[1].split(" ")[0]);
+                }
+            } catch (IOException e) {throw new RuntimeException(e);}
+
+            loadedExtras = true;
         }
 
     }
